@@ -1,0 +1,45 @@
+openapi: 3.0.0
+info:
+  title: Scua Logoncontrol APIs
+  version: 1.0.0
+servers:
+  - url: http://localhost:3090
+paths:
+  /logoncontrol/public/logon/login:
+    post:
+      tags:
+        - General
+      summary: Login
+      description: >-
+        Endpoint de login utilizando usuario e senha. Retorna o token para
+        acesso as outras APIs e as permissões de acesso do usuario em questão.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                txtLogin: scua
+                txtSenha: scua
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/access:
+    get:
+      tags:
+        - General
+      summary: users/access
+      description: Utilizado para buscar uma lista de usuarios X permissão de acesso.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
