@@ -1,26 +1,46 @@
 openapi: 3.0.0
 info:
-  title: Scua Logoncontrol APIs
+  title: API de Integra��o - Scua Logon
   version: 1.0.0
 servers:
+  - url: http://localhost:8080
   - url: http://localhost:3090
+  - url: http://localhost:8095
+  - url: undefined://localhost
+  - url: undefined://172.11.1.101:8095
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+tags:
+  - name: Autentica��o
+  - name: Feriados
+  - name: Administradores
+  - name: Horas Extras
+  - name: Liderados e Gestores
+  - name: Usu�rios (Colaboradores)
+  - name: Jornadas de Trabalho
+  - name: Esta��es de Trabalho
+  - name: Tipos de Jornada
+  - name: Afastamentos e Exce��es
+  - name: Delega��o
+  - name: Dom�nios
+  - name: Par�metros
+  - name: Mensagens
+  - name: Atrasos de Mensagens
+  - name: Notifica��es
+  - name: Relat�rios
+  - name: Grupos
+  - name: Frequ�ncia de Uso
 paths:
-  /logoncontrol/public/logon/login:
-    post:
+  /logoncontrol/user/logout:
+    get:
       tags:
-        - General
-      summary: Login
-      description: >-
-        Endpoint de login utilizando usuario e senha. Retorna o token para
-        acesso as outras APIs e as permissões de acesso do usuario em questão.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              example:
-                txtLogin: scua
-                txtSenha: scua
+        - Autentica��o
+      summary: Logout
       parameters:
         - name: Content-Type
           in: header
@@ -32,12 +52,2334 @@ paths:
           description: Successful response
           content:
             application/json: {}
+  /logoncontrol/public/logon/login:
+    post:
+      tags:
+        - Autentica��o
+      summary: Login
+      description: >-
+        Endpoint de login utilizando usuario e senha. Retorna o token para
+        acesso as outras APIs e as permissões de acesso do usuario em questão.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                txtLogin: usuario
+                txtSenha: senha
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/public/test:
+    get:
+      tags:
+        - Autentica��o
+      summary: Test
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/list:
+    post:
+      tags:
+        - Feriados
+      summary: List
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/list/date/2:
+    post:
+      tags:
+        - Feriados
+      summary: List Dates
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/save:
+    post:
+      tags:
+        - Feriados
+      summary: Save
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codConcessaoFeriadoIdentificador: null
+                nome: teste insercao postman
+                descricao: teste endpoit save
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/save/date:
+    post:
+      tags:
+        - Feriados
+      summary: Save Dates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codConcessaoFeriado: null
+                nomFeriado: feriado teste
+                data: '2019-12-01T00:00:00.0000'
+                inicio: '2000-01-01T00:00:00.0000'
+                fim: '2000-01-01T23:59:59.0000'
+                recorrente: false
+                nacional: false
+                feriadoId:
+                  codConcessaoFeriadoIdentificador: 8
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/delete/date/19:
+    post:
+      tags:
+        - Feriados
+      summary: Delete Date
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/delete/8:
+    post:
+      tags:
+        - Feriados
+      summary: Delete
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/relatedTo/212108316:
+    post:
+      tags:
+        - Feriados
+      summary: Associa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - 43
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/list/holiday/available/212108316:
+    post:
+      tags:
+        - Feriados
+      summary: List Disponiveis
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/holiday/list/holiday/212108316:
+    post:
+      tags:
+        - Feriados
+      summary: List Selecionados
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/administrator/listar:
+    get:
+      tags:
+        - Administradores
+      summary: Listar usuários
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/administrator/cadastro/1:
+    get:
+      tags:
+        - Administradores
+      summary: Detalhe usuário
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/administrator/save:
+    post:
+      tags:
+        - Administradores
+      summary: Salva Edita Usuário
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codUsuario: 212108304
+                codObjetoManager: null
+                codObjeto: 212108304
+                name: Alexandre Gomes
+                email: ''
+                pisPasep: ''
+                excecao: false
+                enviaEmail: true
+                codHorario: null
+                codDepartamento: null
+                logonPermissoes:
+                  admin: false
+                  rh: false
+                  producao: false
+                  sustentacao: false
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/list:
+    post:
+      tags:
+        - Horas Extras
+      summary: List requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: header
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: header
+          schema:
+            type: integer
+          example: '9999'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '9999'
+        - name: order
+          in: query
+          schema:
+            type: string
+          example: r.datInicio
+        - name: direction
+          in: query
+          schema:
+            type: string
+          example: ASC
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/getCounters:
+    post:
+      tags:
+        - Horas Extras
+      summary: GetCounters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - operator: ''
+                  property: codStatus
+                  value: '1'
+                - operator: ''
+                  property: codStatus
+                  value: '2'
+                - operator: ''
+                  property: codStatus
+                  value: '3'
+                - operator: ''
+                  property: codStatus
+                  value: '5'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/list/approvals:
+    post:
+      tags:
+        - Horas Extras
+      summary: List request to approval
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: filters
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/save/date:
+    post:
+      tags:
+        - Horas Extras
+      summary: Create request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codHoraExtraRequisicao: null
+                executor:
+                  codObjeto: 212108432
+                  txtLogin: user30
+                solicitante:
+                  codObjeto: 212108432
+                  txtLogin: user30
+                datRequisicao: '2020-11-13T13:57:37.512Z'
+                datInicio: '2020-11-13T18:00:00.512Z'
+                datFinal: '2020-11-13T21:00:00.512Z'
+                reason: Teste POSTMAN
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: filters
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/approval/3989/2:
+    post:
+      tags:
+        - Horas Extras
+      summary: Approve request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: filters
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/approvals/212108432:
+    get:
+      tags:
+        - Horas Extras
+      summary: List approvals
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: filters
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/getOvertimeHideRecurrent:
+    post:
+      tags:
+        - Horas Extras
+      summary: Get Overtime Hide Recurrent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: filters
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/cancel/11498:
+    post:
+      tags:
+        - Horas Extras
+      summary: Cancel request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: filters
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/overtime/reproveAll:
+    post:
+      tags:
+        - Horas Extras
+      summary: Reprove all requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: filters
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/headedusers/getShownColumns:
+    post:
+      tags:
+        - Liderados e Gestores
+      summary: http://localhost:8095/logoncontrol/headedusers/getShownColumns
+      requestBody:
+        content: {}
+      parameters:
+        - name: ''
+          in: header
+          schema:
+            type: string
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/headedusers/listar:
+    post:
+      tags:
+        - Liderados e Gestores
+      summary: List
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: query
+                  value: user07
+      parameters:
+        - name: ''
+          in: header
+          schema:
+            type: string
+          example: desc
+        - name: ''
+          in: header
+          schema:
+            type: string
+          example: nomNome
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: direction
+          in: query
+          schema:
+            type: string
+          example: DSC
+        - name: field
+          in: query
+          schema:
+            type: string
+          example: txtEmail
+        - name: page
+          in: query
+          schema:
+            type: string
+          example: ' 0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/mark/212108288:
+    post:
+      tags:
+        - Usu�rios (Colaboradores)
+      summary: Mark time
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/listar/overtime:
+    post:
+      tags:
+        - Usu�rios (Colaboradores)
+      summary: listar/overtime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/listar:
+    post:
+      tags:
+        - Usu�rios (Colaboradores)
+      summary: users/listar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: ''
+                  value: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: order
+          in: query
+          schema:
+            type: string
+          example: manager
+        - name: direction
+          in: query
+          schema:
+            type: string
+          example: DESC
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: query
+          in: query
+          schema:
+            type: string
+          example: user4
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/listar/manager:
+    post:
+      tags:
+        - Usu�rios (Colaboradores)
+      summary: users/listar/manager
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: cod_objeto
+          in: query
+          schema:
+            type: string
+        - name: login
+          in: query
+          schema:
+            type: string
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: ativo
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/unblock/:
+    post:
+      tags:
+        - Usu�rios (Colaboradores)
+      summary: users/unblock
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/release_journey/212108324:
+    post:
+      tags:
+        - Usu�rios (Colaboradores)
+      summary: users/release_journey
+      requestBody:
+        content: {}
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/users/getSuperioresSubstitutos:
+    get:
+      tags:
+        - Usu�rios (Colaboradores)
+      summary: getSuperioresSubstitutos
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
   /logoncontrol/users/access:
     get:
       tags:
-        - General
+        - Usu�rios (Colaboradores)
       summary: users/access
       description: Utilizado para buscar uma lista de usuarios X permissão de acesso.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/list:
+    post:
+      tags:
+        - Jornadas de Trabalho
+      summary: List working hours
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: identificador
+                  operator: ''
+                  value: ''
+                - property: descricao
+                  operator: ''
+                  value: ''
+                - property: ativo
+                  operator: ''
+                  value: ''
+                - property: padrao
+                  operator: ''
+                  value: ''
+                - property: liberaRegra
+                  operator: ''
+                  value: ''
+                - property: informativa
+                  operator: ''
+                  value: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/list/date/1128:
+    get:
+      tags:
+        - Jornadas de Trabalho
+      summary: List working hours date
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/availablelist:
+    get:
+      tags:
+        - Jornadas de Trabalho
+      summary: List available users
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/selectedlist/1128:
+    get:
+      tags:
+        - Jornadas de Trabalho
+      summary: List selected users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/save:
+    post:
+      tags:
+        - Jornadas de Trabalho
+      summary: Save working hours
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                nomHorario: 4 Teste thiago
+                txtHorario: 4 Teste thiago
+                ativo: false
+                indDefault: false
+                indExcecao: false
+                indNoblock: false
+                indNoblockRep: false
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/save/date:
+    post:
+      tags:
+        - Jornadas de Trabalho
+      summary: Save working hours date
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codeDate: 1664
+                entry: '18:00'
+                exit: '09:00'
+                weekday: Domingo
+                weekdayAbbr: Dom
+                weekdayCode: 1
+                numHoras: 2
+                numMinDescanso: null
+                numMaxDescanso: null
+                numMaxIntervaloDescanso: null
+                numMaxInterjornada: null
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/delete/2073:
+    post:
+      tags:
+        - Jornadas de Trabalho
+      summary: Delete working hours
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/addTo/212108288/1:
+    post:
+      tags:
+        - Jornadas de Trabalho
+      summary: Add to working hours
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghours/removeFrom/212108288/1:
+    post:
+      tags:
+        - Jornadas de Trabalho
+      summary: Remove to working hours
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workstation/listar:
+    get:
+      tags:
+        - Esta��es de Trabalho
+      summary: List Workstation
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /:
+    get:
+      tags:
+        - Par�metros
+      summary: Save
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/workinghourtype/list:
+    get:
+      tags:
+        - Tipos de Jornada
+      summary: List Workhourstype
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: txtTipoJornada
+          in: query
+          schema:
+            type: string
+        - name: txtDescricao
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/usersexceptions/save:
+    post:
+      tags:
+        - Afastamentos e Exce��es
+      summary: Save
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codObjetoExcecao: null
+                objeto: 212108324
+                datInicio: '2019-10-15T19:00:00'
+                datFim: '2019-10-15T14:00:00'
+                txtReason: teste
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/usersdelegate/update:
+    post:
+      tags:
+        - Delega��o
+      summary: Save / Update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codObjetoDelegacao: null
+                datFinal: '2019-10-15'
+                datInicio: '2019-10-15'
+                delegado: 212108295
+                delegador: 212108303
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/usersdelegate/list/212108295:
+    post:
+      tags:
+        - Delega��o
+      summary: List
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: query
+                  value: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/domain/listar:
+    post:
+      tags:
+        - Dom�nios
+      summary: List
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/domain/details/1:
+    get:
+      tags:
+        - Dom�nios
+      summary: Details
+      parameters:
+        - name: login
+          in: query
+          schema:
+            type: string
+          example: thiago
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/domain/domainsync/1:
+    get:
+      tags:
+        - Dom�nios
+      summary: Domain Sync
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/domain/save:
+    post:
+      tags:
+        - Dom�nios
+      summary: Save
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                identifier: identificador teste
+                name: nome teste
+                ldapUrl: ldap://urlteste
+                dn: dn=dnteste
+                login: loginteste
+                password: senhateste
+                category: person
+                codigo: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: ''
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/domain/delete/12:
+    delete:
+      tags:
+        - Dom�nios
+      summary: Delete
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/domain/sync:
+    post:
+      tags:
+        - Dom�nios
+      summary: Sync User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                acoes: null
+                admin: false
+                ativo: null
+                blocked: null
+                blockOvertime: false
+                cod_departamento: null
+                cod_horario: null
+                cod_objeto: null
+                cod_objeto_manager: null
+                codDominio: 1
+                codigo: null
+                datSync: null
+                defaultView: null
+                department: ''
+                dn: CN=Jose E. Ciceri,OU=Diretoria,DC=scuacorporate,DC=com,DC=br
+                dominio: null
+                email: ''
+                envia_email: false
+                excecao: false
+                in_breaktime: false
+                in_interwork_rest_period: false
+                in_overtime: null
+                ind_group_active: false
+                login: ze
+                manager: ''
+                name: Jose E. Ciceri
+                num_sessoes: 0
+                producao: false
+                rh: false
+                sid: S-1-5-21-2992931701-3174798598-1760272966-1105
+                sustentacao: false
+                txt_pis_pasep: null
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/parameter/listar:
+    post:
+      tags:
+        - Par�metros
+      summary: List
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: name
+                  operator: ''
+                  value: show
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/parameter/save:
+    post:
+      tags:
+        - Par�metros
+      summary: Get Param
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codParametro: 98
+                value: '1'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/msgsystem/listar:
+    get:
+      tags:
+        - Mensagens
+      summary: List
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/msgsystem/save:
+    post:
+      tags:
+        - Mensagens
+      summary: Save
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                codigo: 1
+                mensagem: Bem vindo ao ambiente SCUA! Bom trabalho!!!
+                num_tempo_timeout: 60
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/msgsystemdelay/listar:
+    get:
+      tags:
+        - Atrasos de Mensagens
+      summary: List
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/msgsystemdelay/update:
+    post:
+      tags:
+        - Atrasos de Mensagens
+      summary: Update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                abbr: MSG_KICK_BLOCK
+                codigo: 28
+                mensagem: Sua jornada TERMINOU!!! Bata o ponto e vá EMBORA!!!
+                num_tempo_delay: '10'
+                num_tempo_timeout: '10'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/msgsystemdelay/delete/48:
+    post:
+      tags:
+        - Atrasos de Mensagens
+      summary: Delete
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/msgsystemdelay/listar-tipos:
+    get:
+      tags:
+        - Atrasos de Mensagens
+      summary: Listar Tipos
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/notificationconfig/list:
+    get:
+      tags:
+        - Notifica��es
+      summary: List
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/notificationconfig/details/1003:
+    get:
+      tags:
+        - Notifica��es
+      summary: Details
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/notificationconfig/save:
+    post:
+      tags:
+        - Notifica��es
+      summary: Save
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                titulo: Extensão de jornada aprovada
+                template: Sua requisição de extensão de jornada foi aprovada.
+                send: 1
+                tipoEvento:
+                  nomTipoEvento: EVT_APPROVAL_OVERTIME
+                  codTipoEvento: 1003
+                profiles:
+                  - id: 3
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/logon:
+    post:
+      tags:
+        - Relat�rios
+      summary: Eventos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: login
+                  value: ''
+                - property: workstation
+                  value: ''
+                - property: dat_inicial
+                  value: '2020-05-01'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: header
+          schema:
+            type: integer
+          example: '1'
+        - name: size
+          in: header
+          schema:
+            type: integer
+          example: '20'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: order
+          in: query
+          schema:
+            type: string
+          example: dat_evento
+        - name: direction
+          in: query
+          schema:
+            type: string
+          example: ASC
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/logon/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Eventos XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: login
+                  value: ''
+                - property: workstation
+                  value: ''
+                - property: dat_inicial
+                  value: '2000-01-30'
+                - property: dat_final
+                  value: '2020-11-10'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/logonsint:
+    post:
+      tags:
+        - Relat�rios
+      summary: Logon Logoff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: login
+                  operator: ''
+                  value: ''
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2000
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: order
+          in: query
+          schema:
+            type: string
+          example: dat_ultimo_logoff
+        - name: direction
+          in: query
+          schema:
+            type: string
+          example: ASC
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/logonsint/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Logon Logoff XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: login
+                  operator: ''
+                  value: thiago
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/blockedallowed:
+    post:
+      tags:
+        - Relat�rios
+      summary: Liberações e Bloqueios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: login
+                  operator: ''
+                  value: thiago
+                - property: workstation
+                  operator: ''
+                  value: scua
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+                - property: filtrar_motivo
+                  operator: ''
+                  value: ''
+                - property: liberacao
+                  operator: ''
+                  value: 'true'
+                - property: bloqueio
+                  operator: ''
+                  value: 'false'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/blockedallowed/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Liberações e Bloqueios XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: login
+                  operator: ''
+                  value: thiago
+                - property: workstation
+                  operator: ''
+                  value: scua
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+                - property: filtrar_motivo
+                  operator: ''
+                  value: ''
+                - property: liberacao
+                  operator: ''
+                  value: 'true'
+                - property: bloqueio
+                  operator: ''
+                  value: 'true'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/areaallowed:
+    post:
+      tags:
+        - Relat�rios
+      summary: Liberações por Areas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/areaallowed/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Liberações por Areas XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/managerallowed:
+    post:
+      tags:
+        - Relat�rios
+      summary: Liberações por Gestor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/managerallowed/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Liberações por Getor XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/rankingexception:
+    post:
+      tags:
+        - Relat�rios
+      summary: Ranking por Exceções
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/rankingexception/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Ranking por Exceções XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/overtime:
+    post:
+      tags:
+        - Relat�rios
+      summary: Horas Extras
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  value: '2020-05-01'
+                - property: dat_final
+                  value: '2022-11-10'
+                - property: cod_status
+                  operator: ''
+                  values: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '9999'
+        - name: order
+          in: query
+          schema:
+            type: string
+          example: horas_solicitadas
+        - name: direction
+          in: query
+          schema:
+            type: string
+          example: ASC
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/overtime/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Horas Extras XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+                - property: cod_status
+                  operator: ''
+                  values:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/workstation:
+    post:
+      tags:
+        - Relat�rios
+      summary: Esta��es de Trabalho
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: workstation
+                  operator: ''
+                  value: ''
+                - property: dominio
+                  operator: ''
+                  value: ''
+                - property: versaoAgente
+                  operator: ''
+                  value: .
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2000
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2022
+                - property: liberacao
+                  operator: ''
+                  value: 'true'
+                - property: sid
+                  operator: ''
+                  value: S-1-5-21
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: order
+          in: query
+          schema:
+            type: string
+          example: sid
+        - name: direction
+          in: query
+          schema:
+            type: string
+          example: DESC
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/report/workstation/xls:
+    post:
+      tags:
+        - Relat�rios
+      summary: Workstation XLS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: workstation
+                  operator: ''
+                  value: scua
+                - property: dominio
+                  operator: ''
+                  value: corporate
+                - property: versaoAgente
+                  operator: ''
+                  value: '32'
+                - property: dat_inicial
+                  operator: ''
+                  value: 01/10/2019
+                - property: dat_final
+                  operator: ''
+                  value: 30/10/2019
+                - property: liberacao
+                  operator: ''
+                  value: 'true'
+                - property: sid
+                  operator: ''
+                  value: S-1-5-21
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/group/listar:
+    post:
+      tags:
+        - Grupos
+      summary: groups/listar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - property: ativo
+                  value: 'true'
+                - property: query
+                  value: VisualizA
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: tipo
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/group/save:
+    post:
+      tags:
+        - Grupos
+      summary: Save
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                txtLogin: olhaumtestemuitolouco3
+                nomNome: olhaumtestemuitolouco
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: num_sessoes
+          in: query
+          schema:
+            type: integer
+          example: '0'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/group/action/relatedTo/212108347:
+    post:
+      tags:
+        - Grupos
+      summary: Save actios to groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - code: 55
+                  name: Visualiza gestores no cabeçalho.
+                - code: 56
+                  name: Visualiza subistitutos no cabeçalho
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/group/action/removeFrom/212108347:
+    post:
+      tags:
+        - Grupos
+      summary: Remove actios from groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - code: 55
+                  name: Visualiza gestores no cabeçalho.
+                - code: 56
+                  name: Visualiza subistitutos no cabeçalho
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/group/delete/212108479:
+    post:
+      tags:
+        - Grupos
+      summary: Remove groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - code: 55
+                  name: Visualiza gestores no cabeçalho.
+                - code: 56
+                  name: Visualiza subistitutos no cabeçalho
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /logoncontrol/public/usage:
+    post:
+      tags:
+        - Frequ�ncia de Uso
+      summary: createFreqUsage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                applications:
+                  - title: Pesquisar
+                    seconds: 1
+                  - title: Conexões de Rede
+                    seconds: 6
+                  - title: >-
+                      Caixa de entrada - thiago.ribas@scua.com.br - Outlook
+                      (Falha na Ativação do Produto)
+                    seconds: 1
+                  - title: >-
+                      Caixa de entrada - thiago.ribas@scua.com.br (1) - Outlook
+                      (Falha na Ativação do Produto)
+                    seconds: 11
+                  - title: Executar
+                    seconds: 2
+                  - title: Conexão de Área de Trabalho Remota
+                    seconds: 15
+                  - title: Segurança do Windows
+                    seconds: 2
+                  - title: 172.11.1.101 - Conexão de Área de Trabalho Remota
+                    seconds: 111
+                  - title: Mozilla Firefox
+                    seconds: 33
+                  - title: Alternância de Tarefas
+                    seconds: 15
+                  - title: Skype
+                    seconds: 132
+                  - title: Form1
+                    seconds: 6
+                  - title: Skype [1]
+                    seconds: 16
+                  - title: Gamers Nexus - YouTube — Mozilla Firefox
+                    seconds: 3
+                  - title: Gerenciador de Tarefas
+                    seconds: 28
+                  - title: >-
+                      Process Explorer - Sysinternals: www.sysinternals.com
+                      [SCUACORPORATE\thiago.ribas] (Administrator)
+                    seconds: 57
+                  - title: YouTube — Mozilla Firefox
+                    seconds: 6
+                  - title: Process Explorer
+                    seconds: 2
+                  - title: AgentMonitor.Forms.exe:10380 Properties
+                    seconds: 10
+                  - title: Angra Rebirth Reaction - YouTube — Mozilla Firefox
+                    seconds: 34
+                  - title: LogonControl — Mozilla Firefox
+                    seconds: 44
+                  - title: angra nova era reaction - YouTube — Mozilla Firefox
+                    seconds: 12
+                createdDate: '2021-01-08T08:15:00.000Z'
+                hostname: scuadev01n
+                ipAddress: 172.31.144.1
+                domain: DOMAINTESTE
+                username: LOGIN.TESTE
+                idleTime: -10795
+                os: Microsoft Windows NT 6.2.9200.0
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
       responses:
         '200':
           description: Successful response
