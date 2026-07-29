@@ -65,6 +65,11 @@ info:
 
     '
 servers:
+- url: https://scua-logon-api-mock.scua-logon-dev.workers.dev
+  description: Mock gratuito (Cloudflare Workers) - use o botao "Test Request" aqui em cima com este
+    servidor selecionado. Devolve exemplo real para os endpoints ja documentados na Fase 1 (login,
+    users/listar, holiday/delete/{id}) e 501 honesto para os demais - nao grava nada de verdade, seguro
+    para qualquer parceiro testar a vontade. Ver mock/README.md no repositorio.
 - url: http://localhost:8080
   description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da
     sua instancia SCUA Logon.
