@@ -2,7 +2,19 @@ openapi: 3.0.0
 info:
   title: API de Integração - Scua Logon
   version: 1.0.0
-  description: '## Como autenticar
+  description: '## Por que alguns endpoints de listagem usam POST em vez de GET
+
+
+    Vários endpoints de listar/buscar (`holiday/list`, `users/listar`, `workinghours/list`, etc.) usam
+    `POST` mesmo sendo operações de leitura. Não é erro de documentação: eles aceitam uma lista dinâmica
+    de filtros no corpo da requisição, e GET com corpo não é bem suportado pela maioria dos clientes HTTP.
+    Enviar corpo vazio (`[]`) retorna a lista completa, sem filtro.
+
+
+    ---
+
+
+    ## Como autenticar
 
 
     1. Chame `POST /public/logon/login` com `txtLogin` e `txtSenha` (ou `txtSenha: "Azure"` quando a autenticação
@@ -236,6 +248,12 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
+        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
+        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
+        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
+        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
+        a lista sem filtro.'
   /logoncontrol/holiday/list/date/2:
     post:
       tags:
@@ -248,6 +266,12 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
+        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
+        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
+        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
+        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
+        a lista sem filtro.'
   /logoncontrol/holiday/save:
     post:
       tags:
@@ -355,6 +379,12 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
+        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
+        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
+        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
+        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
+        a lista sem filtro.'
   /logoncontrol/holiday/list/holiday/212108316:
     post:
       tags:
@@ -367,6 +397,12 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
+        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
+        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
+        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
+        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
+        a lista sem filtro.'
   /logoncontrol/users/listar:
     post:
       tags:
@@ -486,6 +522,12 @@ paths:
           description: Erro inesperado ao montar a listagem.
           content:
             application/json: {}
+      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
+        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
+        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
+        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
+        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
+        a lista sem filtro.'
   /logoncontrol/users/listar/manager:
     post:
       tags:
@@ -534,6 +576,12 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
+        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
+        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
+        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
+        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
+        a lista sem filtro.'
   /logoncontrol/users/getSuperioresSubstitutos:
     get:
       tags:
@@ -584,6 +632,12 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
+        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
+        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
+        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
+        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
+        a lista sem filtro.'
   /logoncontrol/workinghours/list/date/1128:
     get:
       tags:
