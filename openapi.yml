@@ -68,8 +68,19 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+              - txtLogin
+              - txtSenha
+              properties:
+                txtLogin:
+                  type: string
+                  description: Login do usuário.
+                txtSenha:
+                  type: string
+                  description: Senha em texto puro, ou a string literal 'Azure' quando a autenticação
+                    é via Azure AD (fluxo separado, feature flag SCUA_LOGON_AUTH_TYPES).
               example:
-                txtLogin: usuario
+                txtLogin: usuario.exemplo
                 txtSenha: senha
       parameters:
       - name: Content-Type
@@ -79,7 +90,50 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Successful response
+          description: Login bem-sucedido. O campo `token` é um UUID opaco (não é JWT) — o servidor valida
+            esse token contra um mapa mantido em memória no processo Java (`loggedUsers`). Não há expiração
+            automática visível no código atual; confirmar com o time antes de assumir TTL.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  codUsuario:
+                    type: integer
+                  nomUsuario:
+                    type: string
+                  txtLogin:
+                    type: string
+                  txtEmail:
+                    type: string
+                  codObjeto:
+                    type: integer
+                  token:
+                    type: string
+                    description: UUID opaco, usar em chamadas subsequentes.
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                    description: 'Roles do usuário (ex: ROLE_ADMIN_LOGON, ROLE_GESTOR).'
+                  acoes:
+                    type: array
+                    items:
+                      type: object
+                    description: Permissões granulares do usuário.
+        '400':
+          description: Usuário não encontrado (nem no banco local, nem no AD/Azure AD).
+          content:
+            application/json: {}
+        '401':
+          description: Credencial inválida, ou usuário desativado.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Mensagem de erro em texto simples.
+        '500':
+          description: Erro inesperado durante o processo de login.
           content:
             application/json: {}
       security: []
@@ -205,18 +259,6 @@ paths:
             schema:
               type: object
               example: ''
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json: {}
-  /logoncontrol/holiday/delete/8:
-    post:
-      tags:
-      - Feriados
-      summary: Delete
-      requestBody:
-        content: {}
       responses:
         '200':
           description: Successful response
@@ -750,7 +792,82 @@ paths:
         example: user4
       responses:
         '200':
-          description: Successful response
+          description: Página (Spring Data `Page`) de usuários. Campos de paginação padrão (`content`,
+            `totalElements`, `totalPages`, `number`, `size`, `first`, `last`, `empty`) envolvem uma lista
+            de `LogonUser` — DTO real do backend, não a entidade de banco.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        codigo:
+                          type: integer
+                        login:
+                          type: string
+                        name:
+                          type: string
+                        email:
+                          type: string
+                        dominio:
+                          type: string
+                        admin:
+                          type: boolean
+                        rh:
+                          type: boolean
+                        producao:
+                          type: boolean
+                        sustentacao:
+                          type: boolean
+                        excecao:
+                          type: boolean
+                        ativo:
+                          type: boolean
+                        blocked:
+                          type: boolean
+                        codObjeto:
+                          type: integer
+                        codHorario:
+                          type: integer
+                        codObjetoManager:
+                          type: integer
+                        department:
+                          type: string
+                        numSessoes:
+                          type: integer
+                        enviaEmail:
+                          type: boolean
+                        inOvertime:
+                          type: boolean
+                        inInterworkRestPeriod:
+                          type: boolean
+                        inBreaktime:
+                          type: boolean
+                        acoes:
+                          type: array
+                          items:
+                            type: object
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  number:
+                    type: integer
+                    description: Página atual (0-indexed).
+                  size:
+                    type: integer
+                  first:
+                    type: boolean
+                  last:
+                    type: boolean
+                  empty:
+                    type: boolean
+        '500':
+          description: Erro inesperado ao montar a listagem.
           content:
             application/json: {}
   /logoncontrol/users/listar/manager:
@@ -2388,3 +2505,32 @@ paths:
           content:
             application/json: {}
       security: []
+  /logoncontrol/holiday/delete/{id}:
+    post:
+      tags:
+      - Feriados
+      summary: Delete
+      responses:
+        '200':
+          description: Feriado removido. Retorna o próprio id removido.
+          content:
+            application/json:
+              schema:
+                type: integer
+        '403':
+          description: Usuário sem permissão para gerenciar feriados (fora de ROLE_ADMIN/ADMIN_LOGON/RH/SUSTENTACAO).
+          content:
+            application/json: {}
+        '500':
+          description: Erro inesperado ao remover o feriado.
+          content:
+            application/json:
+              schema:
+                type: integer
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código do feriado (codConcessaoFeriadoIdentificador).

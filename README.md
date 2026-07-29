@@ -36,3 +36,14 @@ Hoje o processo é manual:
 - Documentar schemas de resposta e catálogo de erros por endpoint.
 - Escrever um guia de autenticação (obtenção/expiração do bearer token, permissões).
 - Avaliar um mock server (ex: Scalar mock, Prism) para permitir teste real sem expor infraestrutura interna.
+
+## Progresso da Fase 1 (contrato confiável)
+
+Iniciado em 2026-07-29 — ver plano completo em `PLANO_EVOLUCAO_DOCUMENTACAO_API.md` no workspace interno do projeto (não publicado neste repo público).
+
+Endpoints já com schema real (extraído do código do backend, não do Postman) e status HTTP reais documentados:
+- `POST /logoncontrol/public/logon/login`
+- `POST /logoncontrol/users/listar`
+- `POST /logoncontrol/holiday/delete/{id}` (path corrigido — antes tinha um ID fixo de teste)
+
+Os demais ~85 endpoints ainda mostram apenas `200 / application/json: {}` — seguem o mesmo método, priorizados por uso em integrações reais.
