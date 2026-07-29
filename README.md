@@ -47,3 +47,7 @@ Endpoints já com schema real (extraído do código do backend, não do Postman)
 - `POST /logoncontrol/holiday/delete/{id}` (path corrigido — antes tinha um ID fixo de teste)
 
 Os demais ~85 endpoints ainda mostram apenas `200 / application/json: {}` — seguem o mesmo método, priorizados por uso em integrações reais.
+
+## Progresso da Fase 2 (autenticação e segurança do contrato)
+
+Adicionado guia de autenticação completo no início da doc publicada (`info.description` do `openapi.yml`, renderizado pelo Scalar): como obter e usar o token, por que ele não expira automaticamente, e o que cada permissão (`admin`/`rh`/`producao`/`sustentacao`) habilita. Auditoria confirmada contra o `SpringSecurityConfig` real do backend — só `/public/**` dispensa token, e isso já estava corretamente refletido nas 3 rotas marcadas `security: []`.

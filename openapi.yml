@@ -2,6 +2,68 @@ openapi: 3.0.0
 info:
   title: API de Integração - Scua Logon
   version: 1.0.0
+  description: '## Como autenticar
+
+
+    1. Chame `POST /public/logon/login` com `txtLogin` e `txtSenha` (ou `txtSenha: "Azure"` quando a autenticação
+    via Azure AD estiver habilitada nesta instância).
+
+    2. Pegue o campo `token` da resposta 200 — é um **UUID opaco**, não é JWT (não dá para decodificar/inspecionar
+    o conteúdo dele, o servidor é quem sabe a quem ele pertence).
+
+    3. Envie esse token em toda chamada seguinte no header `Authorization: Bearer <token>`. Alternativa
+    aceita pelo servidor quando não é possível setar header (ex: link direto de download de relatório
+    em XLS): query string `?t=<token>`.
+
+    4. **Não há expiração automática de token.** O token vive num mapa em memória no processo da API —
+    só é invalidado por (a) chamar `GET /logoncontrol/user/logout`, ou (b) reiniciar a aplicação (derruba
+    todas as sessões ativas de uma vez, de todos os usuários). Não trate a ausência de expiração como
+    garantia — feche a sessão explicitamente via logout quando o uso terminar.
+
+    5. Rotas sob `/public/**` (login, teste de conectividade, telemetria de uso) não exigem token. Todo
+    o resto exige um token válido — não existem endpoints "meio protegidos" nesta API.
+
+
+    ### Permissões retornadas no login
+
+
+    O login devolve uma lista de `roles` e flags booleanas (`admin`, `rh`, `producao`, `sustentacao`)
+    derivadas dela. Nem todo endpoint aceita a mesma combinação de papéis — cada um decide o que aceita.
+
+
+    | Role (nome interno) | Flag equivalente | Uso típico |
+
+    |---|---|---|
+
+    | `ROLE_ADMIN_LOGON` | `admin` | Administração geral do SCUA Logon (usuários, feriados, parâmetros...)
+    |
+
+    | `ROLE_RH_LOGON` | `rh` | Recursos Humanos — aprovações e relatórios de jornada |
+
+    | `ROLE_PRODUCAO_LOGON` | `producao` | Perfil de produção/operação |
+
+    | `ROLE_SUSTENTACAO_LOGON` | `sustentacao` | Suporte/sustentação — acesso amplo para diagnóstico |
+
+    | `ROLE_GESTOR` | — (implícita) | Atribuída automaticamente a quem é gestor ou gestor substituto de
+    alguém — não vem do banco |
+
+    | `ROLE_USER` | — | Usuário comum, sem papel administrativo |
+
+
+    Os nomes de role não são um contrato fixo por endpoint — vários aceitam mais de uma combinação (ex:
+    os endpoints de feriados aceitam ADMIN, ADMIN_LOGON, RH ou SUSTENTACAO). Onde a combinação aceita
+    já foi confirmada no código, isso está anotado na descrição do endpoint específico.
+
+
+    ### O que já foi auditado
+
+
+    Confirmado direto no `SpringSecurityConfig` do backend: só rotas sob `/public/**` (mais `/actuator/health`
+    e `/actuator/prometheus`, que não fazem parte desta documentação — são endpoints de infraestrutura)
+    dispensam token. Isso bate exatamente com as 3 rotas já marcadas `security: []` neste arquivo — nenhuma
+    rota adicional precisou de ajuste nesta auditoria.
+
+    '
 servers:
 - url: http://localhost:8080
   description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da
