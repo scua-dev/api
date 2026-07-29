@@ -19,16 +19,46 @@ crédito, sem expiração. Não depende de servidor próprio nem de nenhum servi
 - **É só um mock.** Nenhuma chamada aqui grava nada de verdade nem precisa de token real — é seguro
   qualquer parceiro externo bater nele à vontade.
 
-## Deploy (2 minutos, sem CLI, sem cartão de crédito)
+## Deploy
 
-1. Criar conta gratuita em https://dash.cloudflare.com/sign-up (só e-mail, sem cartão).
-2. No dashboard: **Workers & Pages** → **Create** → **Create Worker**.
-3. Dar um nome ao Worker (ex: `scua-logon-api-mock`) → **Deploy** (cria com o "Hello World" padrão).
-4. Clicar em **Edit code** (Quick Edit) → apagar tudo → colar o conteúdo de `mock/worker.js` deste
-   repositório → **Deploy**.
-5. A URL fica em algo como `https://scua-logon-api-mock.<seu-subdominio>.workers.dev`.
-6. **Me avisar essa URL** (ou atualizar direto) para eu adicionar em `servers:` no `openapi.yml` —
-   assim o botão "Test Request" do Scalar já aponta pra ela automaticamente.
+Criar conta gratuita em https://dash.cloudflare.com/sign-up (só e-mail, sem cartão) é sempre o
+primeiro passo. A partir daí, dois caminhos:
+
+### Opção A — via API (recomendado)
+
+Em 2026 há bugs conhecidos e amplamente reportados na comunidade Cloudflare com o botão "Create
+Worker" do dashboard (sumido ou inativo para várias contas). Publicar via API evita esse problema:
+
+1. Gerar um API Token em dash.cloudflare.com → seu perfil → API Tokens (ou usar um token de conta
+   com permissão de editar Workers Scripts).
+2. Pegar o Account ID (aparece no dashboard, na barra lateral de qualquer domínio/Workers & Pages).
+3. Rodar (substituindo `$ACCOUNT_ID` e `$API_TOKEN`):
+
+   ```bash
+   curl "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/scripts/scua-logon-api-mock" \
+     -X PUT \
+     -H "Authorization: Bearer $API_TOKEN" \
+     -F "metadata={\"main_module\":\"worker.js\",\"compatibility_date\":\"2026-07-29\"};type=application/json" \
+     -F "worker.js=@worker.js;type=application/javascript+module"
+   ```
+
+4. A rota `workers.dev` é habilitada automaticamente na criação. Buscar o subdomínio da conta:
+   `curl https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/subdomain -H "Authorization: Bearer $API_TOKEN"`
+5. A URL final é `https://scua-logon-api-mock.<subdominio>.workers.dev`.
+
+Quem tiver acesso ao `mcp-server` deste workspace pode usar a tool `deploy_api_mock()` em vez de
+rodar isso manualmente — faz os mesmos passos.
+
+### Opção B — via dashboard (se o botão estiver funcionando na sua conta)
+
+1. **Workers & Pages** → **Create application** → **Create Worker** → **Deploy**.
+2. Clicar em **Edit code** → apagar tudo → colar o conteúdo de `mock/worker.js` deste repositório →
+   **Deploy**.
+
+### Depois do deploy
+
+**Avisar a URL final** (ou atualizar direto) para entrar em `servers:` no `openapi.yml` — assim o
+botão "Test Request" do Scalar já aponta pra ela automaticamente.
 
 ## Atualizar depois
 
