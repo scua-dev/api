@@ -51,3 +51,7 @@ Os demais ~85 endpoints ainda mostram apenas `200 / application/json: {}` — se
 ## Progresso da Fase 2 (autenticação e segurança do contrato)
 
 Adicionado guia de autenticação completo no início da doc publicada (`info.description` do `openapi.yml`, renderizado pelo Scalar): como obter e usar o token, por que ele não expira automaticamente, e o que cada permissão (`admin`/`rh`/`producao`/`sustentacao`) habilita. Auditoria confirmada contra o `SpringSecurityConfig` real do backend — só `/public/**` dispensa token, e isso já estava corretamente refletido nas 3 rotas marcadas `security: []`.
+
+## Progresso da Fase 3 (testabilidade real)
+
+Decisão: mock server, custo zero (sem sandbox real por ora — ver decisão no plano). Código pronto em `mock/worker.js`, para rodar no free tier do Cloudflare Workers (100 mil requisições/dia, sem cartão de crédito). Já cobre os 3 endpoints com schema real (login, `users/listar`, `holiday/delete/{id}`) com exemplo de resposta de verdade; os demais respondem 501 de forma honesta em vez de fingir sucesso. Falta o deploy manual (2 min, ver `mock/README.md`) — depois disso a URL entra em `servers:` no `openapi.yml`.
