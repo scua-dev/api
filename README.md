@@ -50,7 +50,9 @@ Endpoints já com schema real (extraído do código do backend, não do Postman)
 - `POST /logoncontrol/users/listar`
 - `POST /logoncontrol/holiday/delete/{id}` (path corrigido — antes tinha um ID fixo de teste)
 
-Os demais 22 endpoints deste repositório (do escopo cliente, pós-corte de 29/07/2026) ainda mostram apenas `200 / application/json: {}` — seguem o mesmo método, priorizados por uso em integrações reais.
+`POST /logoncontrol/usersvacations/list`, `/save` e `/delete` (Férias e Afastamentos) ganharam schema real em seguida — cobre tanto férias quanto qualquer outro afastamento (licença, atestado etc.), já que o backend usa o mesmo endpoint para os dois (ver `ServiceIntegracaoAfastamentosPontoTel`, que grava afastamento chamando o mesmo serviço de férias).
+
+Os demais 19 endpoints deste repositório ainda mostram apenas `200 / application/json: {}` — seguem o mesmo método, priorizados por uso em integrações reais.
 
 ## Progresso da Fase 2 (autenticação e segurança do contrato)
 

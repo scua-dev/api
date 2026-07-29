@@ -92,6 +92,9 @@ tags:
 - name: Usuários (Colaboradores)
 - name: Jornadas de Trabalho
 - name: Tipos de Jornada
+- name: Férias e Afastamentos
+  description: Períodos de férias e qualquer outro afastamento (licença, atestado etc.) — mesmo endpoint
+    para os dois, ver descrição das operações.
 paths:
   /logoncontrol/user/logout:
     get:
@@ -813,3 +816,134 @@ paths:
         schema:
           type: integer
         description: Código do feriado (codConcessaoFeriadoIdentificador).
+  /logoncontrol/usersvacations/list:
+    get:
+      tags:
+      - Férias e Afastamentos
+      summary: Listar períodos de férias/afastamento de um usuário
+      description: '**Este mesmo endpoint é usado tanto para férias quanto para afastamento de qualquer
+        outro tipo (licença, atestado, etc.).** O backend não distingue os dois conceitos estruturalmente
+        — não há campo de tipo/categoria na tabela; a própria integração de ponto PontoTel grava afastamento
+        chamando este mesmo serviço. Use `txtComentario` para registrar o motivo/tipo do período (ex:
+        "Férias", "Atestado médico", "Licença maternidade").'
+      parameters:
+      - name: codObjeto
+        in: query
+        required: true
+        schema:
+          type: integer
+        description: Código do objeto de segurança (usuário) para o qual listar os períodos.
+        example: 212108288
+      responses:
+        '200':
+          description: Lista de períodos cadastrados para o usuário.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    codFeriasUsuarios:
+                      type: integer
+                    codObjetoSolicitante:
+                      type: integer
+                    codObjetoCadastro:
+                      type: integer
+                    datInicio:
+                      type: string
+                      format: date-time
+                    datFim:
+                      type: string
+                      format: date-time
+                    datCadastro:
+                      type: string
+                      format: date-time
+                    txtComentario:
+                      type: string
+                      description: Texto livre — é o único campo que diferencia férias de outro tipo de
+                        afastamento.
+                    indApagado:
+                      type: boolean
+        '403':
+          description: Usuário logado não tem permissão de ver o menu de férias/afastamento (roles admin/rh/gestor/produção/sustentação,
+            ou ação LOGON_VIEW_USER_VACATION).
+  /logoncontrol/usersvacations/save:
+    post:
+      tags:
+      - Férias e Afastamentos
+      summary: Criar ou atualizar um período de férias/afastamento
+      description: '**Este mesmo endpoint é usado tanto para férias quanto para afastamento de qualquer
+        outro tipo (licença, atestado, etc.).** O backend não distingue os dois conceitos estruturalmente
+        — não há campo de tipo/categoria na tabela; a própria integração de ponto PontoTel grava afastamento
+        chamando este mesmo serviço. Use `txtComentario` para registrar o motivo/tipo do período (ex:
+        "Férias", "Atestado médico", "Licença maternidade"). `objetoCadastro` e `datCadastro` são preenchidos
+        pelo servidor a partir do usuário autenticado — não enviar.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - objetoSolicitante
+              - datInicio
+              - datFim
+              properties:
+                codFeriasUsuarios:
+                  type: integer
+                  description: Omitir para criar; informar para atualizar um período existente.
+                objetoSolicitante:
+                  type: object
+                  properties:
+                    codObjeto:
+                      type: integer
+                  description: Usuário ao qual o período pertence.
+                datInicio:
+                  type: string
+                  format: date-time
+                datFim:
+                  type: string
+                  format: date-time
+                txtComentario:
+                  type: string
+                  description: 'Motivo/tipo do período (ex: "Férias", "Atestado médico").'
+              example:
+                objetoSolicitante:
+                  codObjeto: 212108288
+                datInicio: '2026-08-01T00:00:00'
+                datFim: '2026-08-10T00:00:00'
+                txtComentario: Férias
+      responses:
+        '200':
+          description: Salvo com sucesso. Corpo é o `codFeriasUsuarios` do registro (criado ou atualizado).
+          content:
+            application/json:
+              schema:
+                type: integer
+        '403':
+          description: Sem permissão (mesma checagem do endpoint de listagem).
+        '500':
+          description: Erro ao salvar (corpo retorna -1).
+  /logoncontrol/usersvacations/delete:
+    post:
+      tags:
+      - Férias e Afastamentos
+      summary: Excluir um período de férias/afastamento
+      parameters:
+      - name: codFeriasUsuarios
+        in: query
+        required: true
+        schema:
+          type: integer
+        description: Código do período a excluir.
+      responses:
+        '200':
+          description: Excluído com sucesso.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '403':
+          description: Sem permissão (mesma checagem do endpoint de listagem).
+        '500':
+          description: Erro ao excluir (corpo retorna false).
