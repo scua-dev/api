@@ -13,6 +13,10 @@ Dois artefatos apenas:
 
 Não há build, CI ou dependências — o GitHub Pages serve os dois arquivos da raiz da branch `main` diretamente.
 
+**Escopo (a partir de 29/07/2026): só endpoints relevantes para quem integra um sistema próprio ao Scua Logon** — autenticação, feriados, jornada de trabalho (cadastro + associação usuário↔jornada) e a parte de usuários/gestor usada em integração (listagem, hierarquia gestor↔subordinado). Endpoints de uso exclusivo do portal administrativo Scua (relatórios, hora extra, grupos/RBAC, domínio AD, mensagens, notificações, delegação, estações de trabalho, parâmetros, administradores) saíram deste repositório público e agora vivem num repositório interno separado, de acesso restrito à equipe Scua — ver `CLASSIFICACAO_API_CLIENTE_VS_INTERNO.md` no workspace interno do projeto para o critério completo de corte, endpoint por endpoint.
+
+**Gaps de conteúdo já identificados, ainda sem endpoint documentado aqui** (não é corte de escopo — é funcionalidade que ainda não tem API aberta no backend, ou que tem mas não estava na coleção Postman de origem): férias, afastamento genérico (hoje só entra via integração vendor-specific de ponto), e cadastro de gestor↔usuário fora do fluxo de sincronização com Active Directory. Ver achado correspondente no vault do `scua-logon-expert` para detalhe técnico.
+
 ## Limitações atuais (leia antes de divulgar para cliente/parceiro)
 
 - **Os `servers` listados no `openapi.yml` são apenas exemplos de desenvolvimento** (`localhost`). O botão "Test Request" do Scalar não funciona contra um ambiente real — não há hoje um sandbox público para teste ao vivo. Se for divulgar este link para Apsen, Senior ou outro parceiro, deixe claro que é referência de contrato, não ambiente de testes.
@@ -46,7 +50,7 @@ Endpoints já com schema real (extraído do código do backend, não do Postman)
 - `POST /logoncontrol/users/listar`
 - `POST /logoncontrol/holiday/delete/{id}` (path corrigido — antes tinha um ID fixo de teste)
 
-Os demais ~85 endpoints ainda mostram apenas `200 / application/json: {}` — seguem o mesmo método, priorizados por uso em integrações reais.
+Os demais 22 endpoints deste repositório (do escopo cliente, pós-corte de 29/07/2026) ainda mostram apenas `200 / application/json: {}` — seguem o mesmo método, priorizados por uso em integrações reais.
 
 ## Progresso da Fase 2 (autenticação e segurança do contrato)
 
