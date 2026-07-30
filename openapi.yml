@@ -5,9 +5,7 @@ info:
   description: '## Por que alguns endpoints de listagem usam POST em vez de GET
 
 
-    Vários endpoints de listar/buscar (`holiday/list`, `users/listar`, `workinghours/list`, etc.) usam
-    `POST` mesmo sendo operações de leitura. Eles aceitam uma lista dinâmica de filtros no corpo da requisição, e GET com corpo não é bem suportado pela maioria dos clientes HTTP.
-    Enviar corpo vazio (`[]`) retorna a lista completa, sem filtro.
+    Vários endpoints de listar/buscar (`holiday/list`, `users/listar`, `workinghours/list`, etc.) usam `POST` mesmo sendo operações de leitura. Eles aceitam uma lista dinâmica de filtros no corpo da requisição, e GET com corpo não é bem suportado pela maioria dos clientes HTTP. Enviar corpo vazio (`[]`) retorna a lista completa, sem filtro.
 
 
     ---
@@ -16,38 +14,28 @@ info:
     ## Como autenticar
 
 
-    1. Chame `POST /public/logon/login` com `txtLogin` e `txtSenha` (ou `txtSenha: "Azure"` quando a autenticação
-    via Azure AD estiver habilitada nesta instância).
+    1. Chame `POST /public/logon/login` com `txtLogin` e `txtSenha` (ou `txtSenha: "Azure"` quando a autenticação via Azure AD estiver habilitada nesta instância).
 
-    2. Pegue o campo `token` da resposta 200 — é um **UUID opaco**, não é JWT (não dá para decodificar/inspecionar
-    o conteúdo dele, o servidor é quem sabe a quem ele pertence).
+    2. Pegue o campo `token` da resposta 200 — é um **UUID opaco**, não é JWT (não dá para decodificar/inspecionar o conteúdo dele, o servidor é quem sabe a quem ele pertence).
 
-    3. Envie esse token em toda chamada seguinte no header `Authorization: Bearer <token>`. Alternativa
-    aceita pelo servidor quando não é possível setar header (ex: link direto de download de relatório
-    em XLS): query string `?t=<token>`.
+    3. Envie esse token em toda chamada seguinte no header `Authorization: Bearer <token>`. Alternativa aceita pelo servidor quando não é possível setar header (ex: link direto de download de relatório em XLS): query string `?t=<token>`.
 
-    4. **Não há expiração automática de token.** O token vive num mapa em memória no processo da API —
-    só é invalidado por (a) chamar `GET /logoncontrol/user/logout`, ou (b) reiniciar a aplicação (derruba
-    todas as sessões ativas de uma vez, de todos os usuários). Não trate a ausência de expiração como
-    garantia — feche a sessão explicitamente via logout quando o uso terminar.
+    4. **Não há expiração automática de token.** O token vive num mapa em memória no processo da API — só é invalidado por (a) chamar `GET /logoncontrol/user/logout`, ou (b) reiniciar a aplicação (derruba todas as sessões ativas de uma vez, de todos os usuários). Não trate a ausência de expiração como garantia — feche a sessão explicitamente via logout quando o uso terminar.
 
-    5. Rotas sob `/public/**` (login, teste de conectividade, telemetria de uso) não exigem token. Todo
-    o resto exige um token válido — não existem endpoints "meio protegidos" nesta API.
+    5. Rotas sob `/public/**` (login, teste de conectividade, telemetria de uso) não exigem token. Todo o resto exige um token válido — não existem endpoints "meio protegidos" nesta API.
 
 
     ### Permissões retornadas no login
 
 
-    O login devolve uma lista de `roles` e flags booleanas (`admin`, `rh`, `producao`, `sustentacao`)
-    derivadas dela. Nem todo endpoint aceita a mesma combinação de papéis — cada um decide o que aceita.
+    O login devolve uma lista de `roles` e flags booleanas (`admin`, `rh`, `producao`, `sustentacao`) derivadas dela. Nem todo endpoint aceita a mesma combinação de papéis — cada um decide o que aceita.
 
 
     | Role (nome interno) | Flag equivalente | Uso típico |
 
     |---|---|---|
 
-    | `ROLE_ADMIN_LOGON` | `admin` | Administração geral do SCUA Logon (usuários, feriados, parâmetros...)
-    |
+    | `ROLE_ADMIN_LOGON` | `admin` | Administração geral do SCUA Logon (usuários, feriados, parâmetros...) |
 
     | `ROLE_RH_LOGON` | `rh` | Recursos Humanos — aprovações e relatórios de jornada |
 
@@ -55,35 +43,33 @@ info:
 
     | `ROLE_SUSTENTACAO_LOGON` | `sustentacao` | Suporte/sustentação — acesso amplo para diagnóstico |
 
-    | `ROLE_GESTOR` | — (implícita) | Atribuída automaticamente a quem é gestor ou gestor substituto de
-    alguém — não vem do banco |
+    | `ROLE_GESTOR` | — (implícita) | Atribuída automaticamente a quem é gestor ou gestor substituto de alguém — não vem do banco |
 
     | `ROLE_USER` | — | Usuário comum, sem papel administrativo |
 
 
-    Os nomes de role não são um contrato fixo por endpoint — vários aceitam mais de uma combinação (ex:
-    os endpoints de feriados aceitam ADMIN, ADMIN_LOGON, RH ou SUSTENTACAO).
+    Os nomes de role não são um contrato fixo por endpoint — vários aceitam mais de uma combinação (ex: os endpoints de feriados aceitam ADMIN, ADMIN_LOGON, RH ou SUSTENTACAO).
 
     '
 servers:
 - url: https://scua-logon-api-mock.scua-logon-dev.workers.dev
-  description: Mock gratuito (Cloudflare Workers) - use o botao "Test Request" aqui em cima com este servidor
-    selecionado. Devolve exemplo real de resposta para todos os 28 endpoints documentados aqui -
-    nao grava nada de verdade, seguro para qualquer parceiro testar a vontade.
+  description: Mock gratuito (Cloudflare Workers) - use o botao "Test Request" aqui em cima com este servidor selecionado. Devolve exemplo real de resposta para todos os 28 endpoints documentados aqui - nao grava nada de verdade, seguro para qualquer parceiro testar a vontade.
 - url: http://localhost:8080
-  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da
-    sua instancia SCUA Logon.
+  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da sua instancia SCUA Logon.
 - url: http://localhost:3090
-  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da
-    sua instancia SCUA Logon.
+  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da sua instancia SCUA Logon.
 - url: http://localhost:8095
-  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da
-    sua instancia SCUA Logon.
+  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da sua instancia SCUA Logon.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+  responses:
+    NaoAutenticado:
+      description: "Token ausente ou inválido. Devolvido pelo filtro de autenticação global (TokenAuthenticationFilter/SpringSecurityConfig) antes mesmo de a requisição chegar ao controller — vale para qualquer endpoint fora de `/public/**`. Resposta sem corpo, apenas o header `WWW-Authenticate`. Causas comuns: header `Authorization: Bearer <token>` (ou `?t=`) ausente, token nunca emitido, token de uma sessão já encerrada via logout, ou API reiniciada (derruba todas as sessões em memória de uma vez — ver seção 'Como autenticar' acima)."
+    SemPermissao:
+      description: Token válido, mas o usuário autenticado não tem o papel (role) necessário para esta operação. Ver a tabela de roles em 'Como autenticar' e a descrição específica de cada endpoint para saber quais papéis ele aceita — não há uma regra única para toda a API, cada endpoint decide.
 security:
 - bearerAuth: []
 tags:
@@ -93,8 +79,7 @@ tags:
 - name: Jornadas de Trabalho
 - name: Tipos de Jornada
 - name: Férias e Afastamentos
-  description: Períodos de férias e qualquer outro afastamento (licença, atestado etc.) — mesmo endpoint
-    para os dois, ver descrição das operações.
+  description: Períodos de férias e qualquer outro afastamento (licença, atestado etc.) — mesmo endpoint para os dois, ver descrição das operações.
 paths:
   /logoncontrol/user/logout:
     get:
@@ -114,16 +99,18 @@ paths:
             application/json:
               schema:
                 type: boolean
-      description: 'Encerra a sessão do token usado na chamada (o mesmo token enviado no header `Authorization:
-        Bearer`). Depois disso esse token para de funcionar em qualquer outro endpoint — é preciso fazer
-        login de novo para obter um token novo.'
+              example: true
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Encerra a sessão do token usado na chamada (o mesmo token enviado no header `Authorization: Bearer`). Depois disso esse token para de funcionar em qualquer outro endpoint — é preciso fazer login de novo para obter um token novo.'
   /logoncontrol/public/logon/login:
     post:
       tags:
       - Autenticação
       summary: Login
-      description: Endpoint de login utilizando usuario e senha. Retorna o token para acesso as outras
-        APIs e as permissões de acesso do usuario em questão.
+      description: Endpoint de login utilizando usuario e senha. Retorna o token para acesso as outras APIs e as permissões de acesso do usuario em questão.
       requestBody:
         content:
           application/json:
@@ -138,8 +125,7 @@ paths:
                   description: Login do usuário.
                 txtSenha:
                   type: string
-                  description: Senha em texto puro, ou a string literal 'Azure' quando a autenticação
-                    é via Azure AD (fluxo separado, feature flag SCUA_LOGON_AUTH_TYPES).
+                  description: Senha em texto puro, ou a string literal 'Azure' quando a autenticação é via Azure AD (fluxo separado, feature flag SCUA_LOGON_AUTH_TYPES).
               example:
                 txtLogin: usuario.exemplo
                 txtSenha: senha
@@ -151,9 +137,7 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Login bem-sucedido. O campo `token` é um UUID opaco (não é JWT) — o servidor valida
-            esse token contra um mapa mantido em memória no processo Java (`loggedUsers`). Não há expiração
-            automática visível no código atual; confirmar com o time antes de assumir TTL.
+          description: Login bem-sucedido. O campo `token` é um UUID opaco (não é JWT) — o servidor valida esse token contra um mapa mantido em memória no processo Java (`loggedUsers`). Não há expiração automática visível no código atual; confirmar com o time antes de assumir TTL.
           content:
             application/json:
               schema:
@@ -182,6 +166,16 @@ paths:
                     items:
                       type: object
                     description: Permissões granulares do usuário.
+              example:
+                codUsuario: 1001
+                nomUsuario: "Usuário de Exemplo"
+                txtLogin: "usuario.exemplo"
+                txtEmail: "usuario.exemplo@empresa-exemplo.com.br"
+                codObjeto: 20001
+                token: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                roles:
+                - "ROLE_USER"
+                acoes: []
         '400':
           description: Usuário não encontrado (nem no banco local, nem no AD/Azure AD).
           content:
@@ -269,12 +263,10 @@ paths:
                                 description: Formato HH:mm.
                               recurrent:
                                 type: boolean
-                                description: Se true, a data se repete todo ano (o ano gravado no servidor
-                                  é fixo, 2000, e ignorado na comparação).
+                                description: Se true, a data se repete todo ano (o ano gravado no servidor é fixo, 2000, e ignorado na comparação).
                               national:
                                 type: boolean
-                          description: Datas cadastradas neste grupo (pode vir omitido/vazio dependendo
-                            do endpoint).
+                          description: Datas cadastradas neste grupo (pode vir omitido/vazio dependendo do endpoint).
                   totalElements:
                     type: integer
                   totalPages:
@@ -289,9 +281,33 @@ paths:
                     type: boolean
                   empty:
                     type: boolean
-      description: 'Lista os grupos de feriado cadastrados (ex: "Feriados Nacionais"), paginado. Um grupo
-        pode conter várias datas — ver `/holiday/list/date/{code}` para as datas de um grupo específico.'
-  /logoncontrol/holiday/list/date/2:
+              example:
+                content:
+                - code: 1
+                  name: "Feriados Nacionais"
+                  description: "Feriados que valem para todo o Brasil"
+                  feriados:
+                  - code: 19
+                    codeId: 1
+                    name: "Carnaval"
+                    date: "12/02/2027"
+                    begin: "00:00"
+                    end: "23:59"
+                    recurrent: true
+                    national: true
+                totalElements: 1
+                totalPages: 1
+                number: 0
+                size: 20
+                first: true
+                last: true
+                empty: false
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Lista os grupos de feriado cadastrados (ex: "Feriados Nacionais"), paginado. Um grupo pode conter várias datas — ver `/holiday/list/date/{code}` para as datas de um grupo específico.'
+  /logoncontrol/holiday/list/date/{code}:
     post:
       tags:
       - Feriados
@@ -306,8 +322,28 @@ paths:
               schema:
                 type: array
                 items: *id001
-      description: Lista as datas cadastradas dentro de um grupo de feriado específico (`code` = id do
-        grupo, retornado por `/holiday/list`).
+              example:
+              - code: 19
+                codeId: 1
+                name: "Carnaval"
+                date: "12/02/2027"
+                begin: "00:00"
+                end: "23:59"
+                recurrent: true
+                national: true
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Lista as datas cadastradas dentro de um grupo de feriado específico (`code` = id do grupo, retornado por `/holiday/list`).
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Id do grupo de feriado (codConcessaoFeriadoIdentificador).
+        example: 2
   /logoncontrol/holiday/save:
     post:
       tags:
@@ -342,8 +378,12 @@ paths:
             application/json:
               schema:
                 type: integer
-      description: Cria ou atualiza um grupo de feriado (nome + descrição). Não enviar `codConcessaoFeriadoIdentificador`
-        para criar um grupo novo; enviar o campo preenchido atualiza o grupo existente com esse código.
+              example: 1
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Cria ou atualiza um grupo de feriado (nome + descrição). Não enviar `codConcessaoFeriadoIdentificador` para criar um grupo novo; enviar o campo preenchido atualiza o grupo existente com esse código.
   /logoncontrol/holiday/save/date:
     post:
       tags:
@@ -369,8 +409,7 @@ paths:
                 data:
                   type: string
                   format: date
-                  description: Data do feriado. Se recorrente=true, o ano é substituído por 2000 no servidor
-                    e ignorado nas comparações.
+                  description: Data do feriado. Se recorrente=true, o ano é substituído por 2000 no servidor e ignorado nas comparações.
                 inicio:
                   type: string
                   format: date-time
@@ -400,10 +439,13 @@ paths:
             application/json:
               schema:
                 type: integer
-      description: 'Adiciona ou atualiza uma data dentro de um grupo de feriado já existente (ex: "Carnaval"
-        em 12/02/2027). Marcar `recorrente: true` faz a data valer todo ano (o ano informado é ignorado
-        pelo servidor). Não enviar `codConcessaoFeriado` para criar uma data nova nesse grupo.'
-  /logoncontrol/holiday/delete/date/19:
+              example: 19
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Adiciona ou atualiza uma data dentro de um grupo de feriado já existente (ex: "Carnaval" em 12/02/2027). Marcar `recorrente: true` faz a data valer todo ano (o ano informado é ignorado pelo servidor). Não enviar `codConcessaoFeriado` para criar uma data nova nesse grupo.'
+  /logoncontrol/holiday/delete/date/{code}:
     post:
       tags:
       - Feriados
@@ -421,9 +463,21 @@ paths:
             application/json:
               schema:
                 type: integer
-      description: Remove uma data específica de um grupo de feriado (`code` = id da própria data, não
-        do grupo).
-  /logoncontrol/holiday/relatedTo/212108316:
+              example: 19
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Remove uma data específica de um grupo de feriado (`code` = id da própria data, não do grupo).
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Id da própria data do feriado a remover (não confundir com o id do grupo).
+        example: 19
+  /logoncontrol/holiday/relatedTo/{codObjeto}:
     post:
       tags:
       - Feriados
@@ -440,6 +494,13 @@ paths:
               - 1
               - 2
       parameters:
+      - name: codObjeto
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código do objeto de segurança (usuário) ao qual vincular os grupos de feriado.
+        example: 212108316
       - name: Content-Type
         in: header
         schema:
@@ -454,10 +515,15 @@ paths:
                 type: array
                 items:
                   type: integer
-      description: Vincula um ou mais grupos de feriado a um usuário (`codObjeto` no path; corpo = array
-        de ids de grupo de feriado). Define quais feriados valem para esse usuário. Ver `/holiday/list/holiday/available/{code}`
-        para saber quais grupos ainda podem ser vinculados.
-  /logoncontrol/holiday/list/holiday/available/212108316:
+              example:
+              - 1
+              - 2
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Vincula um ou mais grupos de feriado a um usuário (`codObjeto` no path; corpo = array de ids de grupo de feriado). Define quais feriados valem para esse usuário. Ver `/holiday/list/holiday/available/{code}` para saber quais grupos ainda podem ser vinculados.
+  /logoncontrol/holiday/list/holiday/available/{code}:
     post:
       tags:
       - Feriados
@@ -472,9 +538,33 @@ paths:
               schema:
                 type: array
                 items: *id002
-      description: Lista os grupos de feriado que AINDA NÃO estão vinculados a um usuário (`code` = codObjeto)
-        — usar antes de chamar `relatedTo` para saber o que ainda pode ser adicionado.
-  /logoncontrol/holiday/list/holiday/212108316:
+              example:
+              - code: 1
+                name: "Feriados Nacionais"
+                description: "Feriados que valem para todo o Brasil"
+                feriados:
+                - code: 19
+                  codeId: 1
+                  name: "Carnaval"
+                  date: "12/02/2027"
+                  begin: "00:00"
+                  end: "23:59"
+                  recurrent: true
+                  national: true
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Lista os grupos de feriado que AINDA NÃO estão vinculados a um usuário (`code` = codObjeto) — usar antes de chamar `relatedTo` para saber o que ainda pode ser adicionado.
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código do objeto de segurança (usuário/codObjeto).
+        example: 212108316
+  /logoncontrol/holiday/list/holiday/{code}:
     post:
       tags:
       - Feriados
@@ -489,7 +579,32 @@ paths:
               schema:
                 type: array
                 items: *id002
+              example:
+              - code: 1
+                name: "Feriados Nacionais"
+                description: "Feriados que valem para todo o Brasil"
+                feriados:
+                - code: 19
+                  codeId: 1
+                  name: "Carnaval"
+                  date: "12/02/2027"
+                  begin: "00:00"
+                  end: "23:59"
+                  recurrent: true
+                  national: true
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
       description: Lista os grupos de feriado JÁ vinculados a um usuário (`code` = codObjeto).
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código do objeto de segurança (usuário/codObjeto).
+        example: 212108316
   /logoncontrol/users/listar:
     post:
       tags:
@@ -531,9 +646,7 @@ paths:
         example: user4
       responses:
         '200':
-          description: Página (Spring Data `Page`) de usuários. Campos de paginação padrão (`content`,
-            `totalElements`, `totalPages`, `number`, `size`, `first`, `last`, `empty`) envolvem uma lista
-            de `LogonUser` — DTO real do backend, não a entidade de banco.
+          description: Página (Spring Data `Page`) de usuários. Campos de paginação padrão (`content`, `totalElements`, `totalPages`, `number`, `size`, `first`, `last`, `empty`) envolvem uma lista de `LogonUser` — DTO real do backend, não a entidade de banco.
           content:
             application/json:
               schema:
@@ -605,22 +718,45 @@ paths:
                     type: boolean
                   empty:
                     type: boolean
+              example:
+                content:
+                - codigo: 1001
+                  login: "usuario.exemplo"
+                  name: "Usuário de Exemplo"
+                  email: "usuario.exemplo@empresa-exemplo.com.br"
+                  dominio: "dominio-exemplo"
+                  admin: false
+                  rh: false
+                  producao: false
+                  sustentacao: false
+                  ativo: true
+                  blocked: false
+                  codObjeto: 20001
+                  codHorario: 1
+                  department: "TI"
+                  numSessoes: 0
+                totalElements: 1
+                totalPages: 1
+                number: 0
+                size: 20
+                first: true
+                last: true
+                empty: false
         '500':
           description: Erro inesperado ao montar a listagem.
           content:
             application/json: {}
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
       description: 'Lista os usuários (colaboradores) cadastrados, com paginação e busca.
 
 
         ---
 
 
-        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property":
-        "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura
-        (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável,
-        e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão
-        usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem
-        filtro.'
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.'
   /logoncontrol/users/listar/manager:
     post:
       tags:
@@ -698,19 +834,30 @@ paths:
                       type: boolean
                     blocked:
                       type: boolean
-      description: 'Lista os usuários que são gestores de alguém — útil para preencher um seletor de "gestor"
-        ao associar um colaborador a um gestor em outro sistema.
+              example:
+              - codigo: 212108288
+                login: "usuario.exemplo"
+                name: "Usuário de Exemplo"
+                email: "usuario.exemplo@empresa-exemplo.com.br"
+                dominio: "EMPRESA-EXEMPLO"
+                admin: false
+                rh: false
+                producao: false
+                sustentacao: false
+                excecao: false
+                ativo: true
+                blocked: false
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Lista os usuários que são gestores de alguém — útil para preencher um seletor de "gestor" ao associar um colaborador a um gestor em outro sistema.
 
 
         ---
 
 
-        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property":
-        "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura
-        (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável,
-        e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão
-        usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem
-        filtro.'
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.'
   /logoncontrol/users/getSuperioresSubstitutos:
     get:
       tags:
@@ -732,9 +879,15 @@ paths:
                       type: array
                       items:
                         type: string
-      description: 'Retorna, para o usuário dono do token usado na chamada (não é um parâmetro — é sempre
-        o usuário autenticado), a lista dos gestores dele e, para cada gestor, os substitutos/delegados
-        cadastrados para aprovações (ex: hora extra) enquanto aquele gestor está indisponível.'
+              example:
+              - nomManager: "Fulano de Tal"
+                nomSubstitutos:
+                - "Beltrano da Silva"
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Retorna, para o usuário dono do token usado na chamada (não é um parâmetro — é sempre o usuário autenticado), a lista dos gestores dele e, para cada gestor, os substitutos/delegados cadastrados para aprovações (ex: hora extra) enquanto aquele gestor está indisponível.'
   /logoncontrol/workinghours/list:
     post:
       tags:
@@ -830,19 +983,42 @@ paths:
                     type: boolean
                   empty:
                     type: boolean
+              example:
+                content:
+                - codHorario: 1128
+                  nomHorario: "Comercial"
+                  txtHorario: "08:00 as 17:00"
+                  indAtivo: true
+                  indDefault: true
+                  indExcecao: false
+                  indNoBlock: false
+                  indNoBlockRep: false
+                  indBlockOvertimeRequest: false
+                  indNoControlRep: false
+                  indAskOfficeType: false
+                  codTipoJornada: 1
+                  numTimeExtendsTwoBossesApprove: 0
+                  indCalculaCompensacao: false
+                  indTolerance: true
+                totalElements: 1
+                totalPages: 1
+                number: 0
+                size: 20
+                first: true
+                last: true
+                empty: false
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
       description: 'Lista as jornadas (grades de horário) cadastradas, paginado.
 
 
         ---
 
 
-        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property":
-        "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura
-        (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável,
-        e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão
-        usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem
-        filtro.'
-  /logoncontrol/workinghours/list/date/1128:
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.'
+  /logoncontrol/workinghours/list/date/{codHour}:
     get:
       tags:
       - Jornadas de Trabalho
@@ -891,9 +1067,35 @@ paths:
                       type: integer
                     codPerfilPausa:
                       type: integer
-      description: 'Lista os horários de cada dia da semana dentro de uma jornada específica (`codHour`
-        = id da jornada) — ex: segunda 08:00–17:00, terça 08:00–17:00 etc. Editar um desses horários (`/save/date`)
-        afeta todos os usuários associados a essa jornada.'
+              example:
+              - codeDate: 2073
+                entry: "08:00"
+                exit: "17:00"
+                weekday: "Segunda-feira"
+                weekdayAbbr: "SEG"
+                weekdayCode: 2
+                numHoras: 8.0
+                numMinDescanso: 60
+                numMaxDescanso: 60
+                numMaxIntervaloDescanso: 120
+                numMaxInterjornada: 660
+                numLogonTolerance: 10
+                numHoldUser: 0
+                maxOvertimePeriod: 120
+                codPerfilPausa: 1
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Lista os horários de cada dia da semana dentro de uma jornada específica (`codHour` = id da jornada) — ex: segunda 08:00–17:00, terça 08:00–17:00 etc. Editar um desses horários (`/save/date`) afeta todos os usuários associados a essa jornada.'
+      parameters:
+      - name: codHour
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código da jornada (codHorario).
+        example: 1128
   /logoncontrol/workinghours/availablelist:
     get:
       tags:
@@ -940,9 +1142,33 @@ paths:
                     type: boolean
                   empty:
                     type: boolean
-      description: Lista os usuários que ainda não estão associados a nenhuma jornada — candidatos para
-        vincular via `/addTo/{codObject}/{codHour}`.
-  /logoncontrol/workinghours/selectedlist/1128:
+              example:
+                content:
+                - codigo: 212108288
+                  login: "usuario.exemplo"
+                  name: "Usuário de Exemplo"
+                  email: "usuario.exemplo@empresa-exemplo.com.br"
+                  dominio: "EMPRESA-EXEMPLO"
+                  admin: false
+                  rh: false
+                  producao: false
+                  sustentacao: false
+                  excecao: false
+                  ativo: true
+                  blocked: false
+                totalElements: 1
+                totalPages: 1
+                number: 0
+                size: 20
+                first: true
+                last: true
+                empty: false
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Lista os usuários que ainda não estão associados a nenhuma jornada — candidatos para vincular via `/addTo/{codObject}/{codHour}`.
+  /logoncontrol/workinghours/selectedlist/{codJourney}:
     get:
       tags:
       - Jornadas de Trabalho
@@ -955,7 +1181,32 @@ paths:
               schema:
                 type: array
                 items: *id003
+              example:
+              - codigo: 212108288
+                login: "usuario.exemplo"
+                name: "Usuário de Exemplo"
+                email: "usuario.exemplo@empresa-exemplo.com.br"
+                dominio: "EMPRESA-EXEMPLO"
+                admin: false
+                rh: false
+                producao: false
+                sustentacao: false
+                excecao: false
+                ativo: true
+                blocked: false
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
       description: Lista os usuários já associados a uma jornada específica (`codJourney` = id da jornada).
+      parameters:
+      - name: codJourney
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código da jornada (codHorario).
+        example: 1128
   /logoncontrol/workinghours/save:
     post:
       tags:
@@ -978,8 +1229,7 @@ paths:
                   type: boolean
                 indDefault:
                   type: boolean
-                  description: Só pode haver uma jornada default no sistema — criar/editar uma segunda
-                    retorna 400.
+                  description: Só pode haver uma jornada default no sistema — criar/editar uma segunda retorna 400.
                 indExcecao:
                   type: boolean
                 indNoBlock:
@@ -1010,13 +1260,29 @@ paths:
           content:
             application/json:
               schema: *id004
+              example:
+                codHorario: 1128
+                nomHorario: "Comercial"
+                txtHorario: "08:00 as 17:00"
+                indAtivo: true
+                indDefault: true
+                indExcecao: false
+                indNoBlock: false
+                indNoBlockRep: false
+                indBlockOvertimeRequest: false
+                indNoControlRep: false
+                indAskOfficeType: false
+                codTipoJornada: 1
+                numTimeExtendsTwoBossesApprove: 0
+                indCalculaCompensacao: false
+                indTolerance: true
         '400':
-          description: Já existe uma jornada marcada como default (indDefault=true) e esta tentativa criaria/editaria
-            uma segunda.
-      description: 'Cria ou atualiza uma jornada (grade de horário). Não enviar `codHorario` para criar
-        uma jornada nova; enviar o campo preenchido atualiza a existente. Atenção: só pode existir uma
-        jornada com `indDefault: true` por vez — tentar criar/editar uma segunda como default retorna
-        400.'
+          description: Já existe uma jornada marcada como default (indDefault=true) e esta tentativa criaria/editaria uma segunda.
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Cria ou atualiza uma jornada (grade de horário). Não enviar `codHorario` para criar uma jornada nova; enviar o campo preenchido atualiza a existente. Atenção: só pode existir uma jornada com `indDefault: true` por vez — tentar criar/editar uma segunda como default retorna 400.'
   /logoncontrol/workinghours/save/date:
     post:
       tags:
@@ -1066,10 +1332,12 @@ paths:
       responses:
         '200':
           description: Atualizado com sucesso (sem corpo de resposta).
-      description: Atualiza o horário de entrada/saída (e outros parâmetros, como tolerância e intervalo
-        de descanso) de um dia da semana já cadastrado dentro de uma jornada. **Isso afeta todos os usuários
-        associados a essa jornada, não é uma mudança por usuário individual.**
-  /logoncontrol/workinghours/delete/2073:
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Atualiza o horário de entrada/saída (e outros parâmetros, como tolerância e intervalo de descanso) de um dia da semana já cadastrado dentro de uma jornada. **Isso afeta todos os usuários associados a essa jornada, não é uma mudança por usuário individual.**
+  /logoncontrol/workinghours/delete/{code}:
     post:
       tags:
       - Jornadas de Trabalho
@@ -1081,6 +1349,13 @@ paths:
               type: object
               example: ''
       parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código da jornada a remover (codHorario).
+        example: 2073
       - name: Content-Type
         in: header
         schema:
@@ -1093,11 +1368,15 @@ paths:
             application/json:
               schema:
                 type: boolean
+              example: true
         '500':
           description: Existem usuários associados a esta jornada — desassocie todos antes de remover.
-      description: Remove uma jornada inteira. Falha (retorna erro) se ainda houver usuários associados
-        a ela — é preciso desassociar todos antes (`/removeFrom`).
-  /logoncontrol/workinghours/addTo/212108288/1:
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Remove uma jornada inteira. Falha (retorna erro) se ainda houver usuários associados a ela — é preciso desassociar todos antes (`/removeFrom`).
+  /logoncontrol/workinghours/addTo/{codObject}/{codHour}:
     post:
       tags:
       - Jornadas de Trabalho
@@ -1109,6 +1388,20 @@ paths:
               type: object
               example: ''
       parameters:
+      - name: codObject
+        in: path
+        required: true
+        schema:
+          type: string
+        description: "Código(s) do(s) objeto(s) de segurança (usuário/codObjeto) a associar. Aceita múltiplos códigos separados por '/' na própria URL, ex: 212108288/212108299/1."
+        example: '212108288'
+      - name: codHour
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código da jornada (codHorario) à qual associar.
+        example: 1
       - name: Content-Type
         in: header
         schema:
@@ -1121,12 +1414,13 @@ paths:
             application/json:
               schema:
                 type: boolean
-      description: 'Associa um ou mais usuários (`codObject` no path — aceita múltiplos códigos separados
-        por `/`, ex: `212108288/212108299`) a uma jornada (`codHour`). É uma substituição: se o usuário
-        já tinha outra jornada associada, esse vínculo anterior é removido antes do novo ser criado. **Não
-        existe conceito de data** — a troca vale a partir de agora, não é possível agendar para o futuro
-        nem limitar a um único dia (ver seção de limitações conhecidas no início desta documentação).'
-  /logoncontrol/workinghours/removeFrom/212108288/1:
+              example: true
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Associa um ou mais usuários (`codObject` no path — aceita múltiplos códigos separados por `/`, ex: `212108288/212108299`) a uma jornada (`codHour`). É uma substituição: se o usuário já tinha outra jornada associada, esse vínculo anterior é removido antes do novo ser criado. **Não existe conceito de data** — a troca vale a partir de agora, não é possível agendar para o futuro nem limitar a um único dia (ver seção de limitações conhecidas no início desta documentação).'
+  /logoncontrol/workinghours/removeFrom/{codObject}/{codHour}:
     post:
       tags:
       - Jornadas de Trabalho
@@ -1138,6 +1432,20 @@ paths:
               type: object
               example: ''
       parameters:
+      - name: codObject
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Código(s) do(s) objeto(s) de segurança (usuário/codObjeto) a desassociar. Aceita múltiplos códigos separados por '/' na própria URL.
+        example: '212108288'
+      - name: codHour
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código da jornada (codHorario) da qual desassociar.
+        example: 1
       - name: Content-Type
         in: header
         schema:
@@ -1150,8 +1458,12 @@ paths:
             application/json:
               schema:
                 type: boolean
-      description: Remove a associação entre um ou mais usuários (`codObject`, aceita múltiplos separados
-        por `/`) e uma jornada (`codHour`) específica.
+              example: true
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Remove a associação entre um ou mais usuários (`codObject`, aceita múltiplos separados por `/`) e uma jornada (`codHour`) específica.
   /logoncontrol/workinghourtype/list:
     get:
       tags:
@@ -1209,9 +1521,23 @@ paths:
                     type: boolean
                   empty:
                     type: boolean
-      description: 'Lista os tipos de jornada cadastrados (categorias usadas para classificar jornadas,
-        ex: "Normal", "Escala 12x36") — não confundir com a jornada em si (`/workinghours`), que é a grade
-        de horário propriamente dita.'
+              example:
+                content:
+                - codTipoJornada: 1
+                  txtTipoJornada: "Normal"
+                  txtDescricao: "Jornada padrao 8h"
+                totalElements: 1
+                totalPages: 1
+                number: 0
+                size: 20
+                first: true
+                last: true
+                empty: false
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: 'Lista os tipos de jornada cadastrados (categorias usadas para classificar jornadas, ex: "Normal", "Escala 12x36") — não confundir com a jornada em si (`/workinghours`), que é a grade de horário propriamente dita.'
   /logoncontrol/holiday/delete/{id}:
     post:
       tags:
@@ -1224,6 +1550,7 @@ paths:
             application/json:
               schema:
                 type: integer
+              example: 8
         '403':
           description: Usuário sem permissão para gerenciar feriados (fora de ROLE_ADMIN/ADMIN_LOGON/RH/SUSTENTACAO).
           content:
@@ -1234,6 +1561,8 @@ paths:
             application/json:
               schema:
                 type: integer
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
       parameters:
       - name: id
         in: path
@@ -1247,11 +1576,7 @@ paths:
       tags:
       - Férias e Afastamentos
       summary: Listar períodos de férias/afastamento de um usuário
-      description: '**Este mesmo endpoint é usado tanto para férias quanto para afastamento de qualquer
-        outro tipo (licença, atestado, etc.).** O backend não distingue os dois conceitos estruturalmente
-        — não há campo de tipo/categoria na tabela; a própria integração de ponto PontoTel grava afastamento
-        chamando este mesmo serviço. Use `txtComentario` para registrar o motivo/tipo do período (ex:
-        "Férias", "Atestado médico", "Licença maternidade").'
+      description: '**Este mesmo endpoint é usado tanto para férias quanto para afastamento de qualquer outro tipo (licença, atestado, etc.).** O backend não distingue os dois conceitos estruturalmente — não há campo de tipo/categoria na tabela; a própria integração de ponto PontoTel grava afastamento chamando este mesmo serviço. Use `txtComentario` para registrar o motivo/tipo do período (ex: "Férias", "Atestado médico", "Licença maternidade").'
       parameters:
       - name: codObjeto
         in: query
@@ -1287,24 +1612,28 @@ paths:
                       format: date-time
                     txtComentario:
                       type: string
-                      description: Texto livre — é o único campo que diferencia férias de outro tipo de
-                        afastamento.
+                      description: Texto livre — é o único campo que diferencia férias de outro tipo de afastamento.
                     indApagado:
                       type: boolean
+              example:
+              - codFeriasUsuarios: 501
+                codObjetoSolicitante: 212108288
+                codObjetoCadastro: 212108288
+                datInicio: "2026-08-01T00:00:00"
+                datFim: "2026-08-10T00:00:00"
+                datCadastro: "2026-07-29T09:00:00"
+                txtComentario: "Férias"
+                indApagado: false
         '403':
-          description: Usuário logado não tem permissão de ver o menu de férias/afastamento (roles admin/rh/gestor/produção/sustentação,
-            ou ação LOGON_VIEW_USER_VACATION).
+          description: Usuário logado não tem permissão de ver o menu de férias/afastamento (roles admin/rh/gestor/produção/sustentação, ou ação LOGON_VIEW_USER_VACATION).
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
   /logoncontrol/usersvacations/save:
     post:
       tags:
       - Férias e Afastamentos
       summary: Criar ou atualizar um período de férias/afastamento
-      description: '**Este mesmo endpoint é usado tanto para férias quanto para afastamento de qualquer
-        outro tipo (licença, atestado, etc.).** O backend não distingue os dois conceitos estruturalmente
-        — não há campo de tipo/categoria na tabela; a própria integração de ponto PontoTel grava afastamento
-        chamando este mesmo serviço. Use `txtComentario` para registrar o motivo/tipo do período (ex:
-        "Férias", "Atestado médico", "Licença maternidade"). `objetoCadastro` e `datCadastro` são preenchidos
-        pelo servidor a partir do usuário autenticado — não enviar.'
+      description: '**Este mesmo endpoint é usado tanto para férias quanto para afastamento de qualquer outro tipo (licença, atestado, etc.).** O backend não distingue os dois conceitos estruturalmente — não há campo de tipo/categoria na tabela; a própria integração de ponto PontoTel grava afastamento chamando este mesmo serviço. Use `txtComentario` para registrar o motivo/tipo do período (ex: "Férias", "Atestado médico", "Licença maternidade"). `objetoCadastro` e `datCadastro` são preenchidos pelo servidor a partir do usuário autenticado — não enviar.'
       requestBody:
         content:
           application/json:
@@ -1346,10 +1675,13 @@ paths:
             application/json:
               schema:
                 type: integer
+              example: 501
         '403':
           description: Sem permissão (mesma checagem do endpoint de listagem).
         '500':
           description: Erro ao salvar (corpo retorna -1).
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
   /logoncontrol/usersvacations/delete:
     post:
       tags:
@@ -1369,13 +1701,15 @@ paths:
             application/json:
               schema:
                 type: boolean
+              example: true
         '403':
           description: Sem permissão (mesma checagem do endpoint de listagem).
         '500':
           description: Erro ao excluir (corpo retorna false).
-      description: Exclui um período de férias/afastamento pelo `codFeriasUsuarios` (retornado ao criar
-        via `/save` ou listado via `/list`).
-  /logoncontrol/holiday/removeFrom/212108316:
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+      description: Exclui um período de férias/afastamento pelo `codFeriasUsuarios` (retornado ao criar via `/save` ou listado via `/list`).
+  /logoncontrol/holiday/removeFrom/{codObjeto}:
     post:
       tags:
       - Feriados
@@ -1392,6 +1726,13 @@ paths:
               - 1
               - 2
       parameters:
+      - name: codObjeto
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Código do objeto de segurança (usuário) do qual desvincular os grupos de feriado.
+        example: 212108316
       - name: Content-Type
         in: header
         schema:
@@ -1406,8 +1747,13 @@ paths:
                 type: array
                 items:
                   type: integer
+              example:
+              - 1
+              - 2
         '500':
           description: Erro inesperado ao remover o vínculo.
-      description: Remove o vínculo entre um ou mais grupos de feriado e um usuário (`codObjeto` no path;
-        corpo = array de ids de grupo de feriado a desvincular). É o inverso de `/holiday/relatedTo/{codObjeto}`
-        --
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+      description: Remove o vínculo entre um ou mais grupos de feriado e um usuário (`codObjeto` no path; corpo = array de ids de grupo de feriado a desvincular). É o inverso de `/holiday/relatedTo/{codObjeto}` (ver descrição daquele endpoint para detalhes).
