@@ -1387,3 +1387,40 @@ paths:
           description: Erro ao excluir (corpo retorna false).
       description: Exclui um período de férias/afastamento pelo `codFeriasUsuarios` (retornado ao criar
         via `/save` ou listado via `/list`).
+  /logoncontrol/holiday/removeFrom/212108316:
+    post:
+      tags:
+      - Feriados
+      summary: Desassocia
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+              description: Ids de grupos de feriado a desvincular do usuário.
+              example:
+              - 1
+              - 2
+      parameters:
+      - name: Content-Type
+        in: header
+        schema:
+          type: string
+        example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        '500':
+          description: Erro inesperado ao remover o vínculo.
+      description: Remove o vínculo entre um ou mais grupos de feriado e um usuário (`codObjeto` no path;
+        corpo = array de ids de grupo de feriado a desvincular). É o inverso de `/holiday/relatedTo/{codObjeto}`
+        -- endpoint confirmado no código (`HolidayController.removeHolidayFromObject`) mas que nunca tinha
+        sido documentado (não estava na coleção Postman de origem).

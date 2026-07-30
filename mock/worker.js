@@ -26,13 +26,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/user/logout",
     "summary": "Logout",
     "tag": "Autenticação",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "GET /logoncontrol/user/logout",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": true
   },
   {
     "method": "POST",
@@ -56,31 +52,40 @@ const OPERATIONS = [
     }
   },
   {
-    "method": "GET",
-    "path": "/logoncontrol/public/test",
-    "pattern": "/logoncontrol/public/test",
-    "summary": "Test",
-    "tag": "Autenticação",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "GET /logoncontrol/public/test",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
-  },
-  {
     "method": "POST",
     "path": "/logoncontrol/holiday/list",
     "pattern": "/logoncontrol/holiday/list",
     "summary": "List",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
+    "mocked": true,
+    "status": 200,
     "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/list",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
+      "content": [
+        {
+          "code": 1,
+          "name": "Feriados Nacionais",
+          "description": "Feriados que valem para todo o Brasil",
+          "feriados": [
+            {
+              "code": 19,
+              "codeId": 1,
+              "name": "Carnaval",
+              "date": "12/02/2027",
+              "begin": "00:00",
+              "end": "23:59",
+              "recurrent": true,
+              "national": true
+            }
+          ]
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "number": 0,
+      "size": 20,
+      "first": true,
+      "last": true,
+      "empty": false
     }
   },
   {
@@ -89,13 +94,20 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/holiday/list/date/2",
     "summary": "List Dates",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/list/date/2",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      {
+        "code": 19,
+        "codeId": 1,
+        "name": "Carnaval",
+        "date": "12/02/2027",
+        "begin": "00:00",
+        "end": "23:59",
+        "recurrent": true,
+        "national": true
+      }
+    ]
   },
   {
     "method": "POST",
@@ -103,13 +115,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/holiday/save",
     "summary": "Save",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/save",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": 1
   },
   {
     "method": "POST",
@@ -117,13 +125,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/holiday/save/date",
     "summary": "Save Dates",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/save/date",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": 19
   },
   {
     "method": "POST",
@@ -131,13 +135,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/holiday/delete/date/19",
     "summary": "Delete Date",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/delete/date/19",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": 19
   },
   {
     "method": "POST",
@@ -145,13 +145,12 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/holiday/relatedTo/212108316",
     "summary": "Associa",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/relatedTo/212108316",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      1,
+      2
+    ]
   },
   {
     "method": "POST",
@@ -159,13 +158,27 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/holiday/list/holiday/available/212108316",
     "summary": "List Disponiveis",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/list/holiday/available/212108316",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      {
+        "code": 1,
+        "name": "Feriados Nacionais",
+        "description": "Feriados que valem para todo o Brasil",
+        "feriados": [
+          {
+            "code": 19,
+            "codeId": 1,
+            "name": "Carnaval",
+            "date": "12/02/2027",
+            "begin": "00:00",
+            "end": "23:59",
+            "recurrent": true,
+            "national": true
+          }
+        ]
+      }
+    ]
   },
   {
     "method": "POST",
@@ -173,13 +186,27 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/holiday/list/holiday/212108316",
     "summary": "List Selecionados",
     "tag": "Feriados",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/holiday/list/holiday/212108316",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      {
+        "code": 1,
+        "name": "Feriados Nacionais",
+        "description": "Feriados que valem para todo o Brasil",
+        "feriados": [
+          {
+            "code": 19,
+            "codeId": 1,
+            "name": "Carnaval",
+            "date": "12/02/2027",
+            "begin": "00:00",
+            "end": "23:59",
+            "recurrent": true,
+            "national": true
+          }
+        ]
+      }
+    ]
   },
   {
     "method": "POST",
@@ -224,13 +251,24 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/users/listar/manager",
     "summary": "users/listar/manager",
     "tag": "Usuários (Colaboradores)",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/users/listar/manager",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      {
+        "codigo": 212108288,
+        "login": "usuario.exemplo",
+        "name": "Usuário de Exemplo",
+        "email": "usuario.exemplo@empresa-exemplo.com.br",
+        "dominio": "EMPRESA-EXEMPLO",
+        "admin": false,
+        "rh": false,
+        "producao": false,
+        "sustentacao": false,
+        "excecao": false,
+        "ativo": true,
+        "blocked": false
+      }
+    ]
   },
   {
     "method": "GET",
@@ -238,13 +276,16 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/users/getSuperioresSubstitutos",
     "summary": "getSuperioresSubstitutos",
     "tag": "Usuários (Colaboradores)",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "GET /logoncontrol/users/getSuperioresSubstitutos",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      {
+        "nomManager": "Fulano de Tal",
+        "nomSubstitutos": [
+          "Beltrano da Silva"
+        ]
+      }
+    ]
   },
   {
     "method": "POST",
@@ -252,12 +293,35 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/list",
     "summary": "List working hours",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
+    "mocked": true,
+    "status": 200,
     "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/workinghours/list",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
+      "content": [
+        {
+          "codHorario": 1128,
+          "nomHorario": "Comercial",
+          "txtHorario": "08:00 as 17:00",
+          "indAtivo": true,
+          "indDefault": true,
+          "indExcecao": false,
+          "indNoBlock": false,
+          "indNoBlockRep": false,
+          "indBlockOvertimeRequest": false,
+          "indNoControlRep": false,
+          "indAskOfficeType": false,
+          "codTipoJornada": 1,
+          "numTimeExtendsTwoBossesApprove": 0,
+          "indCalculaCompensacao": false,
+          "indTolerance": true
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "number": 0,
+      "size": 20,
+      "first": true,
+      "last": true,
+      "empty": false
     }
   },
   {
@@ -266,13 +330,27 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/list/date/1128",
     "summary": "List working hours date",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "GET /logoncontrol/workinghours/list/date/1128",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      {
+        "codeDate": 2073,
+        "entry": "08:00",
+        "exit": "17:00",
+        "weekday": "Segunda-feira",
+        "weekdayAbbr": "SEG",
+        "weekdayCode": 2,
+        "numHoras": 8.0,
+        "numMinDescanso": 60,
+        "numMaxDescanso": 60,
+        "numMaxIntervaloDescanso": 120,
+        "numMaxInterjornada": 660,
+        "numLogonTolerance": 10,
+        "numHoldUser": 0,
+        "maxOvertimePeriod": 120,
+        "codPerfilPausa": 1
+      }
+    ]
   },
   {
     "method": "GET",
@@ -280,12 +358,32 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/availablelist",
     "summary": "List available users",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
+    "mocked": true,
+    "status": 200,
     "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "GET /logoncontrol/workinghours/availablelist",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
+      "content": [
+        {
+          "codigo": 212108288,
+          "login": "usuario.exemplo",
+          "name": "Usuário de Exemplo",
+          "email": "usuario.exemplo@empresa-exemplo.com.br",
+          "dominio": "EMPRESA-EXEMPLO",
+          "admin": false,
+          "rh": false,
+          "producao": false,
+          "sustentacao": false,
+          "excecao": false,
+          "ativo": true,
+          "blocked": false
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "number": 0,
+      "size": 20,
+      "first": true,
+      "last": true,
+      "empty": false
     }
   },
   {
@@ -294,13 +392,24 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/selectedlist/1128",
     "summary": "List selected users",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "GET /logoncontrol/workinghours/selectedlist/1128",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": [
+      {
+        "codigo": 212108288,
+        "login": "usuario.exemplo",
+        "name": "Usuário de Exemplo",
+        "email": "usuario.exemplo@empresa-exemplo.com.br",
+        "dominio": "EMPRESA-EXEMPLO",
+        "admin": false,
+        "rh": false,
+        "producao": false,
+        "sustentacao": false,
+        "excecao": false,
+        "ativo": true,
+        "blocked": false
+      }
+    ]
   },
   {
     "method": "POST",
@@ -308,12 +417,24 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/save",
     "summary": "Save working hours",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
+    "mocked": true,
+    "status": 200,
     "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/workinghours/save",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
+      "codHorario": 1128,
+      "nomHorario": "Comercial",
+      "txtHorario": "08:00 as 17:00",
+      "indAtivo": true,
+      "indDefault": true,
+      "indExcecao": false,
+      "indNoBlock": false,
+      "indNoBlockRep": false,
+      "indBlockOvertimeRequest": false,
+      "indNoControlRep": false,
+      "indAskOfficeType": false,
+      "codTipoJornada": 1,
+      "numTimeExtendsTwoBossesApprove": 0,
+      "indCalculaCompensacao": false,
+      "indTolerance": true
     }
   },
   {
@@ -322,13 +443,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/save/date",
     "summary": "Save working hours date",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/workinghours/save/date",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": null
   },
   {
     "method": "POST",
@@ -336,13 +453,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/delete/2073",
     "summary": "Delete working hours",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/workinghours/delete/2073",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": true
   },
   {
     "method": "POST",
@@ -350,13 +463,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/addTo/212108288/1",
     "summary": "Add to working hours",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/workinghours/addTo/212108288/1",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": true
   },
   {
     "method": "POST",
@@ -364,13 +473,9 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghours/removeFrom/212108288/1",
     "summary": "Remove to working hours",
     "tag": "Jornadas de Trabalho",
-    "mocked": false,
-    "status": 501,
-    "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "POST /logoncontrol/workinghours/removeFrom/212108288/1",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
-    }
+    "mocked": true,
+    "status": 200,
+    "body": true
   },
   {
     "method": "GET",
@@ -378,12 +483,23 @@ const OPERATIONS = [
     "pattern": "/logoncontrol/workinghourtype/list",
     "summary": "List Workhourstype",
     "tag": "Tipos de Jornada",
-    "mocked": false,
-    "status": 501,
+    "mocked": true,
+    "status": 200,
     "body": {
-      "erro": "Endpoint ainda não tem exemplo de mock.",
-      "endpoint": "GET /logoncontrol/workinghourtype/list",
-      "info": "Ver PLANO_EVOLUCAO_DOCUMENTACAO_API.md — Fase 1 em andamento, endpoint por endpoint."
+      "content": [
+        {
+          "codTipoJornada": 1,
+          "txtTipoJornada": "Normal",
+          "txtDescricao": "Jornada padrao 8h"
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "number": 0,
+      "size": 20,
+      "first": true,
+      "last": true,
+      "empty": false
     }
   },
   {
@@ -436,6 +552,19 @@ const OPERATIONS = [
     "mocked": true,
     "status": 200,
     "body": true
+  },
+  {
+    "method": "POST",
+    "path": "/logoncontrol/holiday/removeFrom/212108316",
+    "pattern": "/logoncontrol/holiday/removeFrom/([^/]+)",
+    "summary": "Desassocia",
+    "tag": "Feriados",
+    "mocked": true,
+    "status": 200,
+    "body": [
+      1,
+      2
+    ]
   }
 ];
 
