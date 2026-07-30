@@ -124,6 +124,9 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: 'Encerra a sessão do token usado na chamada (o mesmo token enviado no header `Authorization:
+        Bearer`). Depois disso esse token para de funcionar em qualquer outro endpoint — é preciso fazer
+        login de novo para obter um token novo.'
   /logoncontrol/public/logon/login:
     post:
       tags:
@@ -205,17 +208,6 @@ paths:
           content:
             application/json: {}
       security: []
-  /logoncontrol/public/test:
-    get:
-      tags:
-      - Autenticação
-      summary: Test
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json: {}
-      security: []
   /logoncontrol/holiday/list:
     post:
       tags:
@@ -248,12 +240,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
-      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
-        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
-        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
-        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
-        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
-        a lista sem filtro.'
+      description: 'Lista os grupos de feriado cadastrados (ex: "Feriados Nacionais"), paginado. Um grupo
+        pode conter várias datas — ver `/holiday/list/date/{code}` para as datas de um grupo específico.'
   /logoncontrol/holiday/list/date/2:
     post:
       tags:
@@ -266,12 +254,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
-      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
-        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
-        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
-        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
-        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
-        a lista sem filtro.'
+      description: Lista as datas cadastradas dentro de um grupo de feriado específico (`code` = id do
+        grupo, retornado por `/holiday/list`).
   /logoncontrol/holiday/save:
     post:
       tags:
@@ -297,6 +281,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Cria ou atualiza um grupo de feriado (nome + descrição). Não enviar `codConcessaoFeriadoIdentificador`
+        para criar um grupo novo; enviar o campo preenchido atualiza o grupo existente com esse código.
   /logoncontrol/holiday/save/date:
     post:
       tags:
@@ -328,6 +314,9 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: 'Adiciona ou atualiza uma data dentro de um grupo de feriado já existente (ex: "Carnaval"
+        em 12/02/2027). Marcar `recorrente: true` faz a data valer todo ano (o ano informado é ignorado
+        pelo servidor). Não enviar `codConcessaoFeriado` para criar uma data nova nesse grupo.'
   /logoncontrol/holiday/delete/date/19:
     post:
       tags:
@@ -344,6 +333,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Remove uma data específica de um grupo de feriado (`code` = id da própria data, não
+        do grupo).
   /logoncontrol/holiday/relatedTo/212108316:
     post:
       tags:
@@ -367,6 +358,9 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Vincula um ou mais grupos de feriado a um usuário (`codObjeto` no path; corpo = array
+        de ids de grupo de feriado). Define quais feriados valem para esse usuário. Ver `/holiday/list/holiday/available/{code}`
+        para saber quais grupos ainda podem ser vinculados.
   /logoncontrol/holiday/list/holiday/available/212108316:
     post:
       tags:
@@ -379,12 +373,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
-      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
-        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
-        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
-        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
-        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
-        a lista sem filtro.'
+      description: Lista os grupos de feriado que AINDA NÃO estão vinculados a um usuário (`code` = codObjeto)
+        — usar antes de chamar `relatedTo` para saber o que ainda pode ser adicionado.
   /logoncontrol/holiday/list/holiday/212108316:
     post:
       tags:
@@ -397,12 +387,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
-        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
-        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
-        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
-        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
-        a lista sem filtro.'
+      description: Lista os grupos de feriado JÁ vinculados a um usuário (`code` = codObjeto).
   /logoncontrol/users/listar:
     post:
       tags:
@@ -522,12 +507,18 @@ paths:
           description: Erro inesperado ao montar a listagem.
           content:
             application/json: {}
-      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
-        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
-        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
-        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
-        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
-        a lista sem filtro.'
+      description: 'Lista os usuários (colaboradores) cadastrados, com paginação e busca.
+
+
+        ---
+
+
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property":
+        "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura
+        (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável,
+        e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão
+        usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem
+        filtro.'
   /logoncontrol/users/listar/manager:
     post:
       tags:
@@ -576,12 +567,19 @@ paths:
           description: Successful response
           content:
             application/json: {}
-      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
-        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
-        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
-        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
-        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
-        a lista sem filtro.'
+      description: 'Lista os usuários que são gestores de alguém — útil para preencher um seletor de "gestor"
+        ao associar um colaborador a um gestor em outro sistema.
+
+
+        ---
+
+
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property":
+        "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura
+        (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável,
+        e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão
+        usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem
+        filtro.'
   /logoncontrol/users/getSuperioresSubstitutos:
     get:
       tags:
@@ -592,6 +590,9 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: 'Retorna, para o usuário dono do token usado na chamada (não é um parâmetro — é sempre
+        o usuário autenticado), a lista dos gestores dele e, para cada gestor, os substitutos/delegados
+        cadastrados para aprovações (ex: hora extra) enquanto aquele gestor está indisponível.'
   /logoncontrol/workinghours/list:
     post:
       tags:
@@ -632,12 +633,18 @@ paths:
           description: Successful response
           content:
             application/json: {}
-      description: '**Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros
-        (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação
-        de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros
-        é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral.
-        Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna
-        a lista sem filtro.'
+      description: 'Lista as jornadas (grades de horário) cadastradas, paginado.
+
+
+        ---
+
+
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property":
+        "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura
+        (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável,
+        e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão
+        usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem
+        filtro.'
   /logoncontrol/workinghours/list/date/1128:
     get:
       tags:
@@ -648,6 +655,9 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: 'Lista os horários de cada dia da semana dentro de uma jornada específica (`codHour`
+        = id da jornada) — ex: segunda 08:00–17:00, terça 08:00–17:00 etc. Editar um desses horários (`/save/date`)
+        afeta todos os usuários associados a essa jornada.'
   /logoncontrol/workinghours/availablelist:
     get:
       tags:
@@ -674,6 +684,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Lista os usuários que ainda não estão associados a nenhuma jornada — candidatos para
+        vincular via `/addTo/{codObject}/{codHour}`.
   /logoncontrol/workinghours/selectedlist/1128:
     get:
       tags:
@@ -684,6 +696,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Lista os usuários já associados a uma jornada específica (`codJourney` = id da jornada).
   /logoncontrol/workinghours/save:
     post:
       tags:
@@ -713,6 +726,10 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: 'Cria ou atualiza uma jornada (grade de horário). Não enviar `codHorario` para criar
+        uma jornada nova; enviar o campo preenchido atualiza a existente. Atenção: só pode existir uma
+        jornada com `indDefault: true` por vez — tentar criar/editar uma segunda como default retorna
+        400.'
   /logoncontrol/workinghours/save/date:
     post:
       tags:
@@ -746,6 +763,9 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Atualiza o horário de entrada/saída (e outros parâmetros, como tolerância e intervalo
+        de descanso) de um dia da semana já cadastrado dentro de uma jornada. **Isso afeta todos os usuários
+        associados a essa jornada, não é uma mudança por usuário individual.**
   /logoncontrol/workinghours/delete/2073:
     post:
       tags:
@@ -768,6 +788,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Remove uma jornada inteira. Falha (retorna erro) se ainda houver usuários associados
+        a ela — é preciso desassociar todos antes (`/removeFrom`).
   /logoncontrol/workinghours/addTo/212108288/1:
     post:
       tags:
@@ -790,6 +812,11 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: 'Associa um ou mais usuários (`codObject` no path — aceita múltiplos códigos separados
+        por `/`, ex: `212108288/212108299`) a uma jornada (`codHour`). É uma substituição: se o usuário
+        já tinha outra jornada associada, esse vínculo anterior é removido antes do novo ser criado. **Não
+        existe conceito de data** — a troca vale a partir de agora, não é possível agendar para o futuro
+        nem limitar a um único dia (ver seção de limitações conhecidas no início desta documentação).'
   /logoncontrol/workinghours/removeFrom/212108288/1:
     post:
       tags:
@@ -812,6 +839,8 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: Remove a associação entre um ou mais usuários (`codObject`, aceita múltiplos separados
+        por `/`) e uma jornada (`codHour`) específica.
   /logoncontrol/workinghourtype/list:
     get:
       tags:
@@ -841,6 +870,9 @@ paths:
           description: Successful response
           content:
             application/json: {}
+      description: 'Lista os tipos de jornada cadastrados (categorias usadas para classificar jornadas,
+        ex: "Normal", "Escala 12x36") — não confundir com a jornada em si (`/workinghours`), que é a grade
+        de horário propriamente dita.'
   /logoncontrol/holiday/delete/{id}:
     post:
       tags:
@@ -870,6 +902,7 @@ paths:
         schema:
           type: integer
         description: Código do feriado (codConcessaoFeriadoIdentificador).
+      description: Remove um grupo de feriado inteiro, incluindo todas as datas cadastradas dentro dele.
   /logoncontrol/usersvacations/list:
     get:
       tags:
@@ -1001,3 +1034,5 @@ paths:
           description: Sem permissão (mesma checagem do endpoint de listagem).
         '500':
           description: Erro ao excluir (corpo retorna false).
+      description: Exclui um período de férias/afastamento pelo `codFeriasUsuarios` (retornado ao criar
+        via `/save` ou listado via `/list`).
