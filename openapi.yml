@@ -121,9 +121,11 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Successful response
+          description: true se havia sessão ativa e ela foi encerrada.
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: boolean
       description: 'Encerra a sessão do token usado na chamada (o mesmo token enviado no header `Authorization:
         Bearer`). Depois disso esse token para de funcionar em qualquer outro endpoint — é preciso fazer
         login de novo para obter um token novo.'
@@ -239,7 +241,66 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items: &id002
+                      type: object
+                      properties:
+                        code:
+                          type: integer
+                          description: Id do grupo de feriado (codConcessaoFeriadoIdentificador).
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        feriados:
+                          type: array
+                          items: &id001
+                            type: object
+                            properties:
+                              code:
+                                type: integer
+                                description: Id da própria data (usar em /holiday/delete/date/{code}).
+                              codeId:
+                                type: integer
+                                description: Id do grupo de feriado ao qual esta data pertence.
+                              name:
+                                type: string
+                              date:
+                                type: string
+                                description: Formato dd/MM/yyyy.
+                              begin:
+                                type: string
+                                description: Formato HH:mm.
+                              end:
+                                type: string
+                                description: Formato HH:mm.
+                              recurrent:
+                                type: boolean
+                                description: Se true, a data se repete todo ano (o ano gravado no servidor
+                                  é fixo, 2000, e ignorado na comparação).
+                              national:
+                                type: boolean
+                          description: Datas cadastradas neste grupo (pode vir omitido/vazio dependendo
+                            do endpoint).
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  number:
+                    type: integer
+                  size:
+                    type: integer
+                  first:
+                    type: boolean
+                  last:
+                    type: boolean
+                  empty:
+                    type: boolean
       description: 'Lista os grupos de feriado cadastrados (ex: "Feriados Nacionais"), paginado. Um grupo
         pode conter várias datas — ver `/holiday/list/date/{code}` para as datas de um grupo específico.'
   /logoncontrol/holiday/list/date/2:
@@ -253,7 +314,10 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items: *id001
       description: Lista as datas cadastradas dentro de um grupo de feriado específico (`code` = id do
         grupo, retornado por `/holiday/list`).
   /logoncontrol/holiday/save:
@@ -266,10 +330,17 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                codConcessaoFeriadoIdentificador:
+                  type: integer
+                  description: Omitir para criar um grupo novo.
+                nome:
+                  type: string
+                descricao:
+                  type: string
               example:
-                codConcessaoFeriadoIdentificador: null
-                nome: teste insercao postman
-                descricao: teste endpoit save
+                nome: Feriados Nacionais
+                descricao: Feriados que valem para todo o Brasil
       parameters:
       - name: Content-Type
         in: header
@@ -278,9 +349,11 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Successful response
+          description: Id do grupo (criado ou atualizado).
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: integer
       description: Cria ou atualiza um grupo de feriado (nome + descrição). Não enviar `codConcessaoFeriadoIdentificador`
         para criar um grupo novo; enviar o campo preenchido atualiza o grupo existente com esse código.
   /logoncontrol/holiday/save/date:
@@ -293,16 +366,39 @@ paths:
           application/json:
             schema:
               type: object
-              example:
-                codConcessaoFeriado: null
-                nomFeriado: feriado teste
-                data: '2019-12-01T00:00:00.0000'
-                inicio: '2000-01-01T00:00:00.0000'
-                fim: '2000-01-01T23:59:59.0000'
-                recorrente: false
-                nacional: false
+              required:
+              - feriadoId
+              - nomFeriado
+              - data
+              - inicio
+              - fim
+              properties:
+                codConcessaoFeriado:
+                  type: integer
+                  description: Omitir para criar uma data nova.
+                nomFeriado:
+                  type: string
+                data:
+                  type: string
+                  format: date
+                  description: Data do feriado. Se recorrente=true, o ano é substituído por 2000 no servidor
+                    e ignorado nas comparações.
+                inicio:
+                  type: string
+                  format: date-time
+                fim:
+                  type: string
+                  format: date-time
+                recorrente:
+                  type: boolean
+                nacional:
+                  type: boolean
                 feriadoId:
-                  codConcessaoFeriadoIdentificador: 8
+                  type: object
+                  properties:
+                    codConcessaoFeriadoIdentificador:
+                      type: integer
+                  description: Grupo ao qual esta data pertence.
       parameters:
       - name: Content-Type
         in: header
@@ -311,9 +407,11 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Successful response
+          description: Id da data (criada ou atualizada).
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: integer
       description: 'Adiciona ou atualiza uma data dentro de um grupo de feriado já existente (ex: "Carnaval"
         em 12/02/2027). Marcar `recorrente: true` faz a data valer todo ano (o ano informado é ignorado
         pelo servidor). Não enviar `codConcessaoFeriado` para criar uma data nova nesse grupo.'
@@ -330,9 +428,11 @@ paths:
               example: ''
       responses:
         '200':
-          description: Successful response
+          description: Id da data removida (o mesmo enviado no path).
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: integer
       description: Remove uma data específica de um grupo de feriado (`code` = id da própria data, não
         do grupo).
   /logoncontrol/holiday/relatedTo/212108316:
@@ -344,9 +444,13 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              type: array
+              items:
+                type: integer
+              description: Ids de grupos de feriado a vincular ao usuário.
               example:
-              - 43
+              - 1
+              - 2
       parameters:
       - name: Content-Type
         in: header
@@ -357,7 +461,11 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
       description: Vincula um ou mais grupos de feriado a um usuário (`codObjeto` no path; corpo = array
         de ids de grupo de feriado). Define quais feriados valem para esse usuário. Ver `/holiday/list/holiday/available/{code}`
         para saber quais grupos ainda podem ser vinculados.
@@ -372,7 +480,10 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items: *id002
       description: Lista os grupos de feriado que AINDA NÃO estão vinculados a um usuário (`code` = codObjeto)
         — usar antes de chamar `relatedTo` para saber o que ainda pode ser adicionado.
   /logoncontrol/holiday/list/holiday/212108316:
@@ -386,7 +497,10 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items: *id002
       description: Lista os grupos de feriado JÁ vinculados a um usuário (`code` = codObjeto).
   /logoncontrol/users/listar:
     post:
@@ -566,7 +680,36 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items: &id003
+                  type: object
+                  properties:
+                    codigo:
+                      type: integer
+                    login:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    dominio:
+                      type: string
+                    admin:
+                      type: boolean
+                    rh:
+                      type: boolean
+                    producao:
+                      type: boolean
+                    sustentacao:
+                      type: boolean
+                    excecao:
+                      type: boolean
+                    ativo:
+                      type: boolean
+                    blocked:
+                      type: boolean
       description: 'Lista os usuários que são gestores de alguém — útil para preencher um seletor de "gestor"
         ao associar um colaborador a um gestor em outro sistema.
 
@@ -589,7 +732,18 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    nomManager:
+                      type: string
+                    nomSubstitutos:
+                      type: array
+                      items:
+                        type: string
       description: 'Retorna, para o usuário dono do token usado na chamada (não é um parâmetro — é sempre
         o usuário autenticado), a lista dos gestores dele e, para cada gestor, os substitutos/delegados
         cadastrados para aprovações (ex: hora extra) enquanto aquele gestor está indisponível.'
@@ -632,7 +786,62 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items: &id004
+                      type: object
+                      properties:
+                        codHorario:
+                          type: integer
+                        nomHorario:
+                          type: string
+                        txtHorario:
+                          type: string
+                        indAtivo:
+                          type: boolean
+                        indDefault:
+                          type: boolean
+                          description: Só pode haver uma jornada com indDefault=true no sistema todo.
+                        indExcecao:
+                          type: boolean
+                        indNoBlock:
+                          type: boolean
+                          description: Se true, essa jornada nunca bloqueia logon por horário.
+                        indNoBlockRep:
+                          type: boolean
+                        indBlockOvertimeRequest:
+                          type: boolean
+                        indNoControlRep:
+                          type: boolean
+                        indAskOfficeType:
+                          type: boolean
+                        codTipoJornada:
+                          type: integer
+                          description: Referencia um tipo cadastrado em /workinghourtype/list.
+                        numTimeExtendsTwoBossesApprove:
+                          type: integer
+                        indCalculaCompensacao:
+                          type: boolean
+                        indTolerance:
+                          type: boolean
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  number:
+                    type: integer
+                  size:
+                    type: integer
+                  first:
+                    type: boolean
+                  last:
+                    type: boolean
+                  empty:
+                    type: boolean
       description: 'Lista as jornadas (grades de horário) cadastradas, paginado.
 
 
@@ -654,7 +863,46 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    codeDate:
+                      type: integer
+                      description: Id deste horário de dia-da-semana (usar em /workinghours/save/date).
+                    entry:
+                      type: string
+                      description: Horário de entrada, formato HH:mm.
+                    exit:
+                      type: string
+                      description: Horário de saída, formato HH:mm.
+                    weekday:
+                      type: string
+                      description: 'Nome do dia da semana (ex: Segunda-feira).'
+                    weekdayAbbr:
+                      type: string
+                    weekdayCode:
+                      type: integer
+                    numHoras:
+                      type: number
+                    numMinDescanso:
+                      type: integer
+                    numMaxDescanso:
+                      type: integer
+                    numMaxIntervaloDescanso:
+                      type: integer
+                    numMaxInterjornada:
+                      type: integer
+                    numLogonTolerance:
+                      type: integer
+                    numHoldUser:
+                      type: integer
+                    maxOvertimePeriod:
+                      type: integer
+                    codPerfilPausa:
+                      type: integer
       description: 'Lista os horários de cada dia da semana dentro de uma jornada específica (`codHour`
         = id da jornada) — ex: segunda 08:00–17:00, terça 08:00–17:00 etc. Editar um desses horários (`/save/date`)
         afeta todos os usuários associados a essa jornada.'
@@ -683,7 +931,27 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items: *id003
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  number:
+                    type: integer
+                  size:
+                    type: integer
+                  first:
+                    type: boolean
+                  last:
+                    type: boolean
+                  empty:
+                    type: boolean
       description: Lista os usuários que ainda não estão associados a nenhuma jornada — candidatos para
         vincular via `/addTo/{codObject}/{codHour}`.
   /logoncontrol/workinghours/selectedlist/1128:
@@ -695,7 +963,10 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items: *id003
       description: Lista os usuários já associados a uma jornada específica (`codJourney` = id da jornada).
   /logoncontrol/workinghours/save:
     post:
@@ -707,14 +978,38 @@ paths:
           application/json:
             schema:
               type: object
-              example:
-                nomHorario: 4 Teste usuario.exemplo
-                txtHorario: 4 Teste usuario.exemplo
-                ativo: false
-                indDefault: false
-                indExcecao: false
-                indNoblock: false
-                indNoblockRep: false
+              properties:
+                codHorario:
+                  type: integer
+                  description: Omitir para criar uma jornada nova.
+                nomHorario:
+                  type: string
+                txtHorario:
+                  type: string
+                indAtivo:
+                  type: boolean
+                indDefault:
+                  type: boolean
+                  description: Só pode haver uma jornada default no sistema — criar/editar uma segunda
+                    retorna 400.
+                indExcecao:
+                  type: boolean
+                indNoBlock:
+                  type: boolean
+                indNoBlockRep:
+                  type: boolean
+                indBlockOvertimeRequest:
+                  type: boolean
+                indNoControlRep:
+                  type: boolean
+                indAskOfficeType:
+                  type: boolean
+                numTimeExtendsTwoBossesApprove:
+                  type: integer
+                indCalculaCompensacao:
+                  type: boolean
+                indTolerance:
+                  type: boolean
       parameters:
       - name: Content-Type
         in: header
@@ -725,7 +1020,11 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema: *id004
+        '400':
+          description: Já existe uma jornada marcada como default (indDefault=true) e esta tentativa criaria/editaria
+            uma segunda.
       description: 'Cria ou atualiza uma jornada (grade de horário). Não enviar `codHorario` para criar
         uma jornada nova; enviar o campo preenchido atualiza a existente. Atenção: só pode existir uma
         jornada com `indDefault: true` por vez — tentar criar/editar uma segunda como default retorna
@@ -740,18 +1039,36 @@ paths:
           application/json:
             schema:
               type: object
-              example:
-                codeDate: 1664
-                entry: '18:00'
-                exit: 09:00
-                weekday: Domingo
-                weekdayAbbr: Dom
-                weekdayCode: 1
-                numHoras: 2
-                numMinDescanso: null
-                numMaxDescanso: null
-                numMaxIntervaloDescanso: null
-                numMaxInterjornada: null
+              required:
+              - codeDate
+              properties:
+                codeDate:
+                  type: integer
+                  description: Id do horário de dia-da-semana a atualizar (obtido em /workinghours/list/date/{codHour}).
+                entry:
+                  type: string
+                  description: Novo horário de entrada, formato HH:mm.
+                exit:
+                  type: string
+                  description: Novo horário de saída, formato HH:mm.
+                numHoras:
+                  type: number
+                numMinDescanso:
+                  type: integer
+                numMaxDescanso:
+                  type: integer
+                numMaxIntervaloDescanso:
+                  type: integer
+                numMaxInterjornada:
+                  type: integer
+                numLogonTolerance:
+                  type: integer
+                numHoldUser:
+                  type: integer
+                maxOvertimePeriod:
+                  type: integer
+                codPerfilPausa:
+                  type: integer
       parameters:
       - name: Content-Type
         in: header
@@ -760,9 +1077,7 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Successful response
-          content:
-            application/json: {}
+          description: Atualizado com sucesso (sem corpo de resposta).
       description: Atualiza o horário de entrada/saída (e outros parâmetros, como tolerância e intervalo
         de descanso) de um dia da semana já cadastrado dentro de uma jornada. **Isso afeta todos os usuários
         associados a essa jornada, não é uma mudança por usuário individual.**
@@ -787,7 +1102,11 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: boolean
+        '500':
+          description: Existem usuários associados a esta jornada — desassocie todos antes de remover.
       description: Remove uma jornada inteira. Falha (retorna erro) se ainda houver usuários associados
         a ela — é preciso desassociar todos antes (`/removeFrom`).
   /logoncontrol/workinghours/addTo/212108288/1:
@@ -811,7 +1130,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: boolean
       description: 'Associa um ou mais usuários (`codObject` no path — aceita múltiplos códigos separados
         por `/`, ex: `212108288/212108299`) a uma jornada (`codHour`). É uma substituição: se o usuário
         já tinha outra jornada associada, esse vínculo anterior é removido antes do novo ser criado. **Não
@@ -838,7 +1159,9 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: boolean
       description: Remove a associação entre um ou mais usuários (`codObject`, aceita múltiplos separados
         por `/`) e uma jornada (`codHour`) específica.
   /logoncontrol/workinghourtype/list:
@@ -869,7 +1192,35 @@ paths:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        codTipoJornada:
+                          type: integer
+                        txtTipoJornada:
+                          type: string
+                        txtDescricao:
+                          type: string
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  number:
+                    type: integer
+                  size:
+                    type: integer
+                  first:
+                    type: boolean
+                  last:
+                    type: boolean
+                  empty:
+                    type: boolean
       description: 'Lista os tipos de jornada cadastrados (categorias usadas para classificar jornadas,
         ex: "Normal", "Escala 12x36") — não confundir com a jornada em si (`/workinghours`), que é a grade
         de horário propriamente dita.'
