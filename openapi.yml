@@ -137,7 +137,7 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Login bem-sucedido. O campo `token` é um UUID opaco (não é JWT) — o servidor valida esse token contra um mapa mantido em memória no processo Java (`loggedUsers`). Não há expiração automática visível no código atual; confirmar com o time antes de assumir TTL.
+          description: Login bem-sucedido. O campo `token` é um UUID opaco (não é JWT) — o servidor valida esse token contra um mapa mantido em memória no processo Java (`loggedUsers`). Não expira automaticamente — ver a seção "Como autenticar" no início desta documentação para os detalhes de como a sessão é encerrada.
           content:
             application/json:
               schema:
