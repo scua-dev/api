@@ -54,12 +54,18 @@ info:
 servers:
 - url: https://scua-logon-api-mock.scua-logon-dev.workers.dev
   description: Mock gratuito (Cloudflare Workers) - use o botao "Test Request" aqui em cima com este servidor selecionado. Devolve exemplo real de resposta para todos os 28 endpoints documentados aqui - nao grava nada de verdade, seguro para qualquer parceiro testar a vontade.
-- url: http://localhost:8080
-  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da sua instancia SCUA Logon.
-- url: http://localhost:3090
-  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da sua instancia SCUA Logon.
-- url: http://localhost:8095
-  description: Ambiente de exemplo/desenvolvimento — nao utilizavel externamente. Aponte para a URL da sua instancia SCUA Logon.
+- url: '{protocolo}://{host}'
+  description: 'Sua propria instancia do Scua Logon (on-premise ou nuvem). Troque "host" (e "protocolo" se precisar) pelo endereco real do seu ambiente antes de clicar em "Test Request" -- os dois campos ficam editaveis aqui do lado quando voce seleciona este servidor. Atencao: se a sua instancia so responde em HTTP (sem TLS), o navegador vai bloquear a chamada por "mixed content", ja que esta pagina e servida em HTTPS -- nesse caso, teste com curl/Postman/Insomnia em vez do botao "Test Request" do navegador.'
+  variables:
+    protocolo:
+      enum:
+      - https
+      - http
+      default: https
+      description: 'Protocolo da sua instancia. "http" so funciona testando fora do navegador (ex.: curl) -- o navegador bloqueia chamada HTTP a partir desta pagina HTTPS.'
+    host:
+      default: localhost:8080
+      description: 'Host e porta da sua instancia Scua Logon (ex.: scua.suaempresa.com.br, ou IP:porta da rede interna).'
 components:
   securitySchemes:
     bearerAuth:
