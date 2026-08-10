@@ -182,10 +182,6 @@ paths:
                 roles:
                 - "ROLE_USER"
                 acoes: []
-        '400':
-          description: Usuário não encontrado (nem no banco local, nem no AD/Azure AD).
-          content:
-            application/json: {}
         '401':
           description: Credencial inválida, ou usuário desativado.
           content:
@@ -194,7 +190,7 @@ paths:
                 type: string
                 description: Mensagem de erro em texto simples.
         '500':
-          description: Erro inesperado durante o processo de login.
+          description: 'Erro inesperado durante o processo de login -- inclui o caso mais comum na prática: txtLogin que não existe nem no banco local nem no AD/Azure AD. O código atual lança uma exceção genérica nesse caso, que o controller trata no mesmo tratamento de erro inesperado (não em um 400 dedicado) -- ou seja, tentar logar com um usuário/login que não existe devolve 500, não 400. Não é indicativo de falha de rede, proxy ou infraestrutura do seu ambiente -- confirme primeiro se o login testado existe de fato na instância de destino antes de investigar conectividade.'
           content:
             application/json: {}
       security: []
