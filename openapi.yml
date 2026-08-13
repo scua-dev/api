@@ -687,6 +687,7 @@ paths:
                           type: integer
                         codHorario:
                           type: integer
+                          description: Código da jornada atualmente associada a este usuário (o mesmo codHorario retornado por /workinghours/list) -- não confundir com o ID do próprio usuário.
                         codObjetoManager:
                           type: integer
                         department:
@@ -949,6 +950,7 @@ paths:
                       properties:
                         codHorario:
                           type: integer
+                          description: 'ID único da própria jornada (cod_horario no banco, gerado automaticamente). É este número que você usa como {codHour} nos outros endpoints de jornada (ex: /workinghours/list/date/{codHour}, /workinghours/addTo/{codObject}/{codHour}).'
                         nomHorario:
                           type: string
                         txtHorario:
