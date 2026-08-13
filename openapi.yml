@@ -904,19 +904,7 @@ paths:
               - property: identificador
                 operator: ''
                 value: ''
-              - property: descricao
-                operator: ''
-                value: ''
-              - property: ativo
-                operator: ''
-                value: ''
-              - property: padrao
-                operator: ''
-                value: ''
-              - property: liberaRegra
-                operator: ''
-                value: ''
-              - property: informativa
+              - property: txtHorario
                 operator: ''
                 value: ''
       parameters:
@@ -1019,7 +1007,10 @@ paths:
         ---
 
 
-        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.'
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.
+
+
+        **Filtros que de fato funcionam aqui:** só `identificador` (nome da jornada) e `txtHorario` (texto da grade, ex: "08:00 as 17:00") são aplicados de verdade -- o backend ignora silenciosamente qualquer outra `property` enviada (não dá erro, só não filtra nada). O campo `operator` não é lido neste endpoint -- pode deixar vazio (`""`) ou omitir, não faz diferença no resultado.'
   /logoncontrol/workinghours/list/date/{codHour}:
     get:
       tags:
