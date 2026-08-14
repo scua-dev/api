@@ -618,7 +618,7 @@ paths:
             schema:
               type: object
               example:
-              - property: ''
+              - property: login
                 value: ''
       parameters:
       - name: Content-Type
@@ -641,11 +641,6 @@ paths:
         schema:
           type: integer
         example: '1'
-      - name: query
-        in: query
-        schema:
-          type: string
-        example: user4
       responses:
         '200':
           description: Página (Spring Data `Page`) de usuários. Campos de paginação padrão (`content`, `totalElements`, `totalPages`, `number`, `size`, `first`, `last`, `empty`) envolvem uma lista de `LogonUser` — DTO real do backend, não a entidade de banco.
@@ -759,7 +754,30 @@ paths:
         ---
 
 
-        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.'
+        **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.
+
+
+        **Campos aceitos em `property` (qualquer outro valor é ignorado silenciosamente):**
+
+
+        | property | O que filtra |
+
+        |---|---|
+
+        | `name` | Nome do usuário (`nomNome`) -- correspondência parcial, tipo `LIKE %valor%` |
+
+        | `login` | Login do usuário (`txtLogin`) -- correspondência parcial |
+
+        | `query` | Busca combinada: bate se o valor aparecer no login OU no nome -- útil pra uma busca livre única |
+
+        | `dn` | Distinguished Name do Active Directory -- uso avançado, sincronização com AD |
+
+        | `ativo` | Booleano. Mande `"FALSE"` (texto, exatamente essa palavra) pra listar só inativos -- qualquer outro valor, ou omitir, é tratado como ativo=true |
+
+        | `ind_group_active` | Booleano, mesma lógica de `ativo`, mas para o grupo de acesso do usuário |
+
+
+        Não existe um parâmetro de URL `?query=` separado -- a busca livre é feita via `property: "query"` no corpo, como os demais filtros.'
   /logoncontrol/users/listar/manager:
     post:
       tags:
@@ -1033,7 +1051,10 @@ paths:
         **Por que POST em vez de GET?** Este endpoint aceita uma lista dinâmica de filtros (`[{"property": "...", "operator": "...", "value": "..."}]`) no corpo da requisição — é uma operação de leitura (não grava nada), mas precisa de corpo porque a quantidade e combinação de filtros é variável, e requisições GET com corpo não são bem suportadas por clientes HTTP/proxies em geral. Mesmo padrão usado por várias APIs de busca (ex: Elasticsearch `_search`). Enviar `[]` retorna a lista sem filtro.
 
 
-        **Filtros que de fato funcionam aqui:** só `identificador` (nome da jornada) e `txtHorario` (texto da grade, ex: "08:00 as 17:00") são aplicados de verdade -- o backend ignora silenciosamente qualquer outra `property` enviada (não dá erro, só não filtra nada). O campo `operator` não é lido neste endpoint -- pode deixar vazio (`""`) ou omitir, não faz diferença no resultado.'
+        **Filtros que de fato funcionam aqui:** só `identificador` e `txtHorario` são aplicados de verdade -- o backend ignora silenciosamente qualquer outra `property` enviada (não dá erro, só não filtra nada). O campo `operator` não é lido neste endpoint -- pode deixar vazio (`""`) ou omitir, não faz diferença no resultado.
+
+
+        **Atenção ao nome `identificador`:** apesar do nome, esse filtro busca por texto dentro do **nome da jornada** (`nomHorario`, ex: "Comercial") -- não é o `codHorario` (ID numérico). Hoje não existe filtro por `codHorario` nesta listagem. `txtHorario` busca por texto dentro da descrição da grade (ex: "08:00 as 17:00"). Os dois usam correspondência parcial (equivalente a `LIKE %valor%`), não precisa ser o texto exato.'
   /logoncontrol/workinghours/list/date/{codHour}:
     get:
       tags:
