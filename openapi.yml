@@ -143,7 +143,10 @@ paths:
         example: application/json
       responses:
         '200':
-          description: Login bem-sucedido. O campo `token` é um UUID opaco (não é JWT) — o servidor valida esse token contra um mapa mantido em memória no processo Java (`loggedUsers`). Não expira automaticamente — ver a seção "Como autenticar" no início desta documentação para os detalhes de como a sessão é encerrada.
+          description: 'Login bem-sucedido. O campo `token` é um UUID opaco (não é JWT) — o servidor valida esse token contra um mapa mantido em memória no processo Java (`loggedUsers`).
+
+
+            **Validade do token: não há expiração automática por tempo.** Uma vez emitido, o token continua valido indefinidamente até que aconteça uma destas duas coisas: (a) alguém chama `GET /logoncontrol/user/logout` com esse token (encerra só aquela sessão), ou (b) a aplicação Java é reiniciada (encerra TODAS as sessões de TODOS os usuários de uma vez, já que o mapa vive em memória do processo). Não trate a ausência de expiração como garantia -- se seu sistema guarda o token por muito tempo, esteja preparado para tratar um 401 e refazer o login quando isso acontecer.'
           content:
             application/json:
               schema:
