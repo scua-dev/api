@@ -565,6 +565,23 @@ const OPERATIONS = [
       1,
       2
     ]
+  },
+  {
+    "method": "POST",
+    "path": "/logoncontrol/api/rep/mark",
+    "pattern": "/logoncontrol/api/rep/mark",
+    "summary": "Enviar marcação de ponto",
+    "tag": "Marcações de Ponto",
+    "mocked": true,
+    "status": 200,
+    "body": {
+      "codigo": "COMPUTADA",
+      "codRep": 918234,
+      "tipoIdentificador": "MATRICULA",
+      "identificador": "01234",
+      "dataHora": "2026-10-01T09:03:12",
+      "mensagem": "Marcacao registrada e computada."
+    }
   }
 ];
 

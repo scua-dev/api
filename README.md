@@ -15,15 +15,16 @@ Há também `mock/` (Worker Cloudflare que serve exemplo de resposta real para t
 
 Não há build, CI ou dependências — o GitHub Pages serve os arquivos da raiz da branch `main` diretamente.
 
-**Escopo:** só os 28 endpoints relevantes para quem integra um sistema próprio ao Scua Logon — autenticação, feriados, férias e afastamentos, jornada de trabalho (cadastro + associação usuário↔jornada), tipos de jornada, e a parte de usuários/gestor usada em integração (listagem, hierarquia gestor↔subordinado). Endpoints de uso exclusivo do portal administrativo Scua (relatórios, hora extra, grupos/RBAC, domínio AD, mensagens, notificações, delegação, estações de trabalho, parâmetros, administradores) vivem num repositório interno separado, de acesso restrito à equipe Scua — ver `CLASSIFICACAO_API_CLIENTE_VS_INTERNO.md` no workspace interno do projeto para o critério completo de corte, endpoint por endpoint.
+**Escopo:** só os 29 endpoints relevantes para quem integra um sistema próprio ao Scua Logon — autenticação, feriados, férias e afastamentos, jornada de trabalho (cadastro + associação usuário↔jornada), tipos de jornada, recebimento de marcações de ponto, e a parte de usuários/gestor usada em integração (listagem, hierarquia gestor↔subordinado). Endpoints de uso exclusivo do portal administrativo Scua (relatórios, hora extra, grupos/RBAC, domínio AD, mensagens, notificações, delegação, estações de trabalho, parâmetros, administradores) vivem num repositório interno separado, de acesso restrito à equipe Scua — ver `CLASSIFICACAO_API_CLIENTE_VS_INTERNO.md` no workspace interno do projeto para o critério completo de corte, endpoint por endpoint.
 
 **Gap de produto conhecido, ainda sem endpoint** (não é corte de escopo — é funcionalidade que o backend hoje não expõe): associação gestor↔usuário fora do fluxo de sincronização com Active Directory. Ver achado correspondente no vault do `scua-logon-expert` para detalhe técnico.
 
 ## Estado atual da documentação
 
-- Todos os 28 endpoints têm descrição em prosa (o que fazem, quando usar, limitações conhecidas), schema de campos tipado e exemplo real de corpo de resposta — nenhum mostra mais `200: {}` genérico.
+- Todos os 29 endpoints têm descrição em prosa (o que fazem, quando usar, limitações conhecidas), schema de campos tipado e exemplo real de corpo de resposta — nenhum mostra mais `200: {}` genérico.
 - Path parameters usam o nome real do `@PathVariable` do controller (`{codObjeto}`, `{codHour}`, `{codJourney}` etc.) — não há mais id de teste cravado direto na URL.
 - 401 (token ausente/inválido) e 403 (sem permissão) documentados de forma reutilizável (`components.responses`) em todos os endpoints protegidos, além dos erros específicos de cada rota.
+- O endpoint de marcações de ponto (`/api/rep/mark`) usa autenticação própria — chave fixa de integração, não o token de login. É o único assim; está declarado com o security scheme `repApiKey` e explicado na própria rota.
 - O botão "Test Request" do Scalar funciona de verdade contra o mock gratuito listado em `servers:` (`https://scua-logon-api-mock.scua-logon-dev.workers.dev`) — não precisa de credencial real nem grava nada.
 - Vários `summary` ainda vêm do nome original do request no Postman (`List`, `Save`, `Update...`) e podem se repetir entre módulos diferentes — não usar como identificador único, usar o path.
 

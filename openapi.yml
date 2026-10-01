@@ -53,7 +53,7 @@ info:
     '
 servers:
 - url: https://scua-logon-api-mock.scua-logon-dev.workers.dev
-  description: Mock gratuito (Cloudflare Workers) - use o botao "Test Request" aqui em cima com este servidor selecionado. Devolve exemplo real de resposta para todos os 28 endpoints documentados aqui - nao grava nada de verdade, seguro para qualquer parceiro testar a vontade.
+  description: Mock gratuito (Cloudflare Workers) - use o botao "Test Request" aqui em cima com este servidor selecionado. Devolve exemplo real de resposta para todos os 29 endpoints documentados aqui - nao grava nada de verdade, seguro para qualquer parceiro testar a vontade.
 - url: '{protocolo}://{host}'
   description: 'Sua propria instancia do Scua Logon (on-premise ou nuvem). Troque "host" (e "protocolo" se precisar) pelo endereco real do seu ambiente antes de clicar em "Test Request" -- os dois campos ficam editaveis aqui do lado quando voce seleciona este servidor. Atencao: se a sua instancia so responde em HTTP (sem TLS), o navegador vai bloquear a chamada por "mixed content", ja que esta pagina e servida em HTTPS -- nesse caso, teste com curl/Postman/Insomnia em vez do botao "Test Request" do navegador.'
   variables:
@@ -71,6 +71,10 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+    repApiKey:
+      type: http
+      scheme: bearer
+      description: 'Chave fixa de integração, fornecida pela equipe Scua. **Não é o token do login** — este endpoint não usa o fluxo de `/public/logon/login`: não há login a fazer, a chave não expira e sobrevive a reinicializações da aplicação. Envie-a em `Authorization: Bearer <chave>`. Trate-a como segredo: só sobre HTTPS, nunca versionada em repositório nem registrada em log. Para rotacionar, a equipe Scua troca o valor — a chave nova passa a valer imediatamente e a anterior deixa de funcionar no mesmo instante, sem período de convivência.'
   responses:
     NaoAutenticado:
       description: "Token ausente ou inválido. Devolvido pelo filtro de autenticação global (TokenAuthenticationFilter/SpringSecurityConfig) antes mesmo de a requisição chegar ao controller — vale para qualquer endpoint fora de `/public/**`. Resposta sem corpo, apenas o header `WWW-Authenticate`. Causas comuns: header `Authorization: Bearer <token>` (ou `?t=`) ausente, token nunca emitido, token de uma sessão já encerrada via logout, ou API reiniciada (derruba todas as sessões em memória de uma vez — ver seção 'Como autenticar' acima)."
@@ -86,6 +90,8 @@ tags:
 - name: Tipos de Jornada
 - name: Férias e Afastamentos
   description: Períodos de férias e qualquer outro afastamento (licença, atestado etc.) — mesmo endpoint para os dois, ver descrição das operações.
+- name: Marcações de Ponto
+  description: Recebimento de marcações de ponto (batidas) enviadas pelo sistema de ponto do cliente.
 paths:
   /logoncontrol/user/logout:
     get:
@@ -1797,3 +1803,148 @@ paths:
         '403':
           $ref: '#/components/responses/SemPermissao'
       description: Remove o vínculo entre um ou mais grupos de feriado e um usuário (`codObjeto` no path; corpo = array de ids de grupo de feriado a desvincular). É o inverso de `/holiday/relatedTo/{codObjeto}` (ver descrição daquele endpoint para detalhes).
+  /logoncontrol/api/rep/mark:
+    post:
+      tags:
+      - Marcações de Ponto
+      summary: Enviar marcação de ponto
+      security:
+      - repApiKey: []
+      description: 'Recebe uma marcação de ponto (batida) do sistema de ponto do cliente, no momento em que o funcionário registra o ponto. É essa marcação que libera ou bloqueia a estação de trabalho do funcionário.
+
+
+        **Uma marcação por requisição** — não há envio em lote.
+
+
+        **A autenticação aqui é diferente do resto desta documentação.** Este endpoint usa uma chave fixa fornecida pela equipe Scua, não o token devolvido por `/public/logon/login`. Não há login a fazer e a chave não expira.
+
+
+        **Entrada ou saída não é informada pelo cliente** — o Scua Logon determina o sentido sozinho, alternando a partir do estado anterior do funcionário.
+
+
+        **Trate sempre o resultado pelo campo `codigo`, nunca pelo texto de `mensagem`** — as mensagens podem mudar entre versões, os códigos não. `COMPUTADA`, `REGISTRADA` e `DUPLICADA` são todos sucesso.
+
+
+        **Ordem cronológica importa.** Marcação com horário anterior ou igual à última já registrada para aquele funcionário é recusada com `MARCACAO_RETROATIVA`, e não há como registrá-la depois por esta API. Não há limite de quanto tempo para trás uma marcação pode ser enviada — o que importa é a ordem. Ao reenviar um acúmulo depois de uma indisponibilidade, a fila precisa preservar a ordem original.
+
+
+        **Reenvio é seguro.** Se a requisição falhar por rede ou tempo limite, reenviar a mesma marcação (mesmo funcionário, mesmo horário exato) devolve `DUPLICADA` com HTTP 200, sem duplicar o registro.
+
+
+        A integração precisa estar habilitada na instância Scua Logon de destino — se não estiver, o endpoint responde `403 INTEGRACAO_DESABILITADA` e a equipe Scua precisa ser acionada.'
+      parameters:
+      - name: Content-Type
+        in: header
+        required: true
+        schema:
+          type: string
+        example: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tipoIdentificador
+              - identificador
+              - dataHora
+              properties:
+                tipoIdentificador:
+                  type: string
+                  enum:
+                  - LOGIN
+                  - CPF
+                  - MATRICULA
+                  description: 'Indica o que está sendo enviado em `identificador`. Não diferencia maiúsculas de minúsculas. Valor desconhecido devolve `TIPO_IDENTIFICADOR_INVALIDO`. Use sempre o mesmo tipo de forma consistente — basta um identificador, não envie mais de um.'
+                identificador:
+                  type: string
+                  description: 'O valor correspondente ao tipo. `LOGIN`: login de rede do funcionário, como cadastrado no Active Directory. `CPF`: aceita com ou sem pontuação (`123.456.789-00` e `12345678900` são equivalentes). `MATRICULA`: matrícula do funcionário no sistema de origem.'
+                dominio:
+                  type: string
+                  description: 'Domínio do funcionário. Só se aplica quando `tipoIdentificador` é `LOGIN`, e só é necessário quando o mesmo login existe em mais de um domínio.'
+                dataHora:
+                  type: string
+                  description: 'Momento da marcação, no formato `yyyy-MM-ddTHH:mm:ss`, **sempre no horário de Brasília e sem indicação de fuso**. Enviar com fuso (`...09:03:12Z` ou `...09:03:12-03:00`) é recusado com `PAYLOAD_INVALIDO` — é proposital, porque aceitar e descartar o fuso gravaria o horário errado sem nenhum aviso. Se a biblioteca de serialização do seu sistema emite fuso por padrão (comum no `toISOString()` do JavaScript e no `Instant` do Java), configure-a para gerar data e hora locais.'
+              example:
+                tipoIdentificador: MATRICULA
+                identificador: '01234'
+                dataHora: '2026-10-01T09:03:12'
+      responses:
+        '200':
+          description: 'Marcação aceita. Três códigos caem aqui e **todos são sucesso**: `COMPUTADA` (gravada e já computada), `REGISTRADA` (gravada; o cálculo é concluído em segundos) e `DUPLICADA` (já existia; nada foi duplicado — é a resposta esperada num reenvio).'
+          content:
+            application/json:
+              schema: &respMarcacao
+                type: object
+                properties:
+                  codigo:
+                    type: string
+                    description: 'Código do desfecho. Use este campo para decidir o que fazer, não a `mensagem`.'
+                  codRep:
+                    type: integer
+                    nullable: true
+                    description: Código da marcação gravada. Vem nulo nos casos de erro.
+                  tipoIdentificador:
+                    type: string
+                    description: O mesmo tipo enviado na requisição.
+                  identificador:
+                    type: string
+                    description: O mesmo identificador enviado na requisição.
+                  dataHora:
+                    type: string
+                    description: A mesma dataHora enviada na requisição.
+                  mensagem:
+                    type: string
+                    description: Texto explicativo. Pode mudar entre versões — não use como identificador.
+              example:
+                codigo: COMPUTADA
+                codRep: 918234
+                tipoIdentificador: MATRICULA
+                identificador: '01234'
+                dataHora: '2026-10-01T09:03:12'
+                mensagem: Marcacao registrada e computada.
+        '400':
+          description: '`PAYLOAD_INVALIDO` (campo obrigatório ausente, data ilegível ou data com fuso — corrigir o payload, não reenviar igual), `TIPO_IDENTIFICADOR_INVALIDO` (valor fora de LOGIN/CPF/MATRICULA) ou `MARCACAO_FUTURA` (a dataHora está à frente do horário do servidor — conferir o relógio do sistema de origem).'
+          content:
+            application/json:
+              schema: *respMarcacao
+              example:
+                codigo: PAYLOAD_INVALIDO
+                codRep: null
+                tipoIdentificador: MATRICULA
+                identificador: '01234'
+                dataHora: '2026-10-01T09:03:12Z'
+                mensagem: Payload invalido. Informe tipoIdentificador, identificador e dataHora no formato yyyy-MM-ddTHH:mm:ss, sem fuso horario.
+        '401':
+          description: '`TOKEN_INVALIDO` — chave de integração ausente ou incorreta. Não adianta reenviar igual; conferir a credencial com a equipe Scua. Atenção: este 401 é da chave fixa deste endpoint, não do token de login usado no resto da API.'
+          content:
+            application/json:
+              schema: *respMarcacao
+        '403':
+          description: '`INTEGRACAO_DESABILITADA` — a integração de marcações via API está desligada nesta instância. Acionar a equipe Scua.'
+          content:
+            application/json:
+              schema: *respMarcacao
+        '404':
+          description: '`USUARIO_NAO_ENCONTRADO` — o identificador enviado não corresponde a nenhum funcionário. Conferir o valor e o tipo, e se o funcionário já foi sincronizado.'
+          content:
+            application/json:
+              schema: *respMarcacao
+        '409':
+          description: '`USUARIO_INATIVO` (funcionário existe mas está inativo — não reenviar, verificar cadastro), `IDENTIFICADOR_AMBIGUO` (o valor corresponde a mais de um funcionário ativo; com `LOGIN`, informe também o `dominio` — com `CPF` ou `MATRICULA`, é sinal de cadastro duplicado e precisa ser tratado no cadastro) ou `MARCACAO_RETROATIVA` (já existe marcação posterior a esta — ver a nota de ordem cronológica na descrição).'
+          content:
+            application/json:
+              schema: *respMarcacao
+              example:
+                codigo: MARCACAO_RETROATIVA
+                codRep: null
+                tipoIdentificador: MATRICULA
+                identificador: '01234'
+                dataHora: '2026-10-01T08:00:00'
+                mensagem: Ja existe marcacao posterior a esta para o usuario.
+        '500':
+          description: '`ERRO_INTERNO` — falha inesperada. Pode reenviar; se persistir, acionar a equipe Scua.'
+          content:
+            application/json:
+              schema: *respMarcacao
